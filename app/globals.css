@@ -197,37 +197,70 @@
    DARK MODE — ink-on-surface inverted
    ============================================================ */
 .dark {
-  --background:              #1A1714;
-  --foreground:              #F4F1EA;
-  --card:                    #252118;
-  --card-foreground:         #F4F1EA;
-  --popover:                 #252118;
-  --popover-foreground:      #F4F1EA;
+  /* ── Proposly raw tokens (dark overrides) ─────────────────── */
+  --paper:           #1A1714;
+  --paper-deep:      #141210;
+  --surface:         #252118;
+
+  --ink:             #F4F1EA;
+  --ink-soft:        #C8C0B6;
+  --ink-mute:        #9B9690;
+  --ink-faint:       #6B6560;
+
+  --hairline:        rgba(255, 255, 255, 0.10);
+  --hairline-strong: rgba(255, 255, 255, 0.15);
+
+  --cobalt:          #4F67E8;
+  --cobalt-soft:     rgba(79, 103, 232, 0.15);
+  --cobalt-ink:      #A5B2F5;
+
+  --moss:            #5A9E6E;
+  --moss-soft:       rgba(90, 158, 110, 0.15);
+  --moss-ink:        #A5D4B2;
+
+  --amber:           #D4902A;
+  --amber-soft:      rgba(212, 144, 42, 0.15);
+  --amber-ink:       #F5D4A0;
+
+  --slate-status:    #9B9690;
+  --slate-soft:      rgba(155, 150, 144, 0.15);
+  --slate-ink:       #C8C3BD;
+
+  --crimson:         #C4413A;
+  --crimson-soft:    rgba(196, 65, 58, 0.15);
+
+  /* ── shadcn semantic tokens ───────────────────────────────── */
+  --background:              var(--paper);
+  --foreground:              var(--ink);
+  --card:                    var(--surface);
+  --card-foreground:         var(--ink);
+  --popover:                 var(--surface);
+  --popover-foreground:      var(--ink);
   --primary:                 #4F67E8;
   --primary-foreground:      #ffffff;
   --secondary:               #2E2B27;
-  --secondary-foreground:    #F4F1EA;
+  --secondary-foreground:    var(--ink);
   --muted:                   #2E2B27;
-  --muted-foreground:        #B5ADA2;
+  --muted-foreground:        var(--ink-mute);
   --accent:                  #2E2B27;
-  --accent-foreground:       #F4F1EA;
-  --destructive:             #C4413A;
+  --accent-foreground:       var(--ink);
+  --destructive:             var(--crimson);
   --destructive-foreground:  #ffffff;
-  --border:                  rgba(255, 255, 255, 0.1);
-  --input:                   rgba(255, 255, 255, 0.15);
+  --border:                  var(--hairline);
+  --input:                   var(--hairline-strong);
   --ring:                    #4F67E8;
   --chart-1:                 #4F67E8;
-  --chart-2:                 #5A9E6E;
-  --chart-3:                 #D4902A;
-  --chart-4:                 #C4413A;
-  --chart-5:                 #9B9690;
-  --sidebar:                 #252118;
-  --sidebar-foreground:      #F4F1EA;
+  --chart-2:                 var(--moss);
+  --chart-3:                 var(--amber);
+  --chart-4:                 var(--crimson);
+  --chart-5:                 var(--slate-status);
+  --sidebar:                 var(--surface);
+  --sidebar-foreground:      var(--ink);
   --sidebar-primary:         #4F67E8;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent:          rgba(255, 255, 255, 0.08);
-  --sidebar-accent-foreground: #F4F1EA;
-  --sidebar-border:          rgba(255, 255, 255, 0.1);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border:          var(--hairline);
   --sidebar-ring:            #4F67E8;
 }
 
