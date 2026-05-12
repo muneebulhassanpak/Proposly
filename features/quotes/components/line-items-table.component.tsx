@@ -24,16 +24,19 @@ import type { LineItemRow } from "../quotes.types"
 interface LineItemsTableProps {
   items: LineItemRow[]
   onChange: (items: LineItemRow[]) => void
+  currency: string
 }
 
 function SortableRow({
   item,
   onUpdate,
   onRemove,
+  currency,
 }: {
   item: LineItemRow
   onUpdate: (field: keyof LineItemRow, value: string | number) => void
   onRemove: () => void
+  currency: string
 }) {
   const {
     attributes,
@@ -56,7 +59,7 @@ function SortableRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="grid grid-cols-[20px_1fr_140px_80px_80px_80px_32px] items-center gap-2 border-b border-hairline py-2 last:border-0"
+      className="grid grid-cols-[20px_minmax(0,_400px)_1fr_80px_130px_32px] items-center gap-2 border-b border-hairline py-2 last:border-0"
     >
       {/* Drag handle */}
       <button
@@ -70,12 +73,18 @@ function SortableRow({
 
       {/* Name + description */}
       <div className="min-w-0 space-y-1">
-        <Input
-          value={item.name}
-          onChange={(e) => onUpdate("name", e.target.value.slice(0, 100))}
-          placeholder="Item name"
-          className={`h-8 text-sm${!item.name.trim() ? "border-crimson/50 focus:ring-crimson/40" : ""}`}
-        />
+        {item.product_id ? (
+          <div className="h-8 truncate rounded-[6px] bg-paper px-3 text-sm leading-8 text-ink">
+            {item.name}
+          </div>
+        ) : (
+          <Input
+            value={item.name}
+            onChange={(e) => onUpdate("name", e.target.value.slice(0, 100))}
+            placeholder="Item name"
+            className={`h-8 text-sm${!item.name.trim() ? "border-crimson/50 focus:ring-crimson/40" : ""}`}
+          />
+        )}
         <Input
           value={item.description}
           onChange={(e) => onUpdate("description", e.target.value)}
@@ -84,26 +93,41 @@ function SortableRow({
         />
       </div>
 
-      {/* Unit price — read-only for catalog items */}
+      {/* Unit price — read-only for catalog items, with unit label */}
       {item.product_id ? (
-        <div className="h-8 truncate rounded-[6px] bg-paper px-3 text-right font-mono text-sm leading-8 text-ink-mute tabular-nums">
-          {item.unit_price.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+        <div className="flex h-8 items-center justify-end gap-1 rounded-[6px] bg-paper px-3">
+          <span className="font-mono text-sm text-ink-mute tabular-nums">
+            {item.unit_price.toLocaleString(undefined, {
+              style: "currency",
+              currency,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+          <span className="text-xs text-ink-mute capitalize">
+            / {item.unit || "item"}
+          </span>
         </div>
       ) : (
-        <Input
-          type="number"
-          min={0.01}
-          step="any"
-          value={item.unit_price === 0 ? "" : item.unit_price}
-          onChange={(e) =>
-            onUpdate("unit_price", Math.max(0, parseFloat(e.target.value) || 0))
-          }
-          placeholder="0.00"
-          className="h-8 text-right font-mono text-sm tabular-nums"
-        />
+        <div className="flex h-8 items-center gap-1">
+          <Input
+            type="number"
+            min={0.01}
+            step="any"
+            value={item.unit_price === 0 ? "" : item.unit_price}
+            onChange={(e) =>
+              onUpdate(
+                "unit_price",
+                Math.max(0, parseFloat(e.target.value) || 0)
+              )
+            }
+            placeholder="0.00"
+            className="h-8 min-w-0 flex-1 text-right font-mono text-sm tabular-nums"
+          />
+          <span className="shrink-0 text-xs text-ink-mute capitalize">
+            / {item.unit || "item"}
+          </span>
+        </div>
       )}
 
       {/* Qty */}
@@ -121,14 +145,11 @@ function SortableRow({
         className="h-8 text-right font-mono text-sm tabular-nums"
       />
 
-      {/* Unit (read-only display) */}
-      <div className="truncate text-right text-sm text-ink-mute capitalize">
-        {item.unit || "item"}
-      </div>
-
       {/* Line total */}
       <div className="text-right font-mono text-sm text-ink tabular-nums">
         {lineTotal.toLocaleString(undefined, {
+          style: "currency",
+          currency,
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}
@@ -147,7 +168,11 @@ function SortableRow({
   )
 }
 
-export function LineItemsTable({ items, onChange }: LineItemsTableProps) {
+export function LineItemsTable({
+  items,
+  onChange,
+  currency,
+}: LineItemsTableProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -193,12 +218,11 @@ export function LineItemsTable({ items, onChange }: LineItemsTableProps) {
   return (
     <div>
       {/* Column headers */}
-      <div className="grid grid-cols-[20px_1fr_140px_80px_80px_80px_32px] gap-2 border-b border-hairline pb-2 text-xs text-ink-mute">
+      <div className="grid grid-cols-[20px_minmax(0,_400px)_1fr_80px_130px_32px] gap-2 border-b border-hairline pb-2 text-xs text-ink-mute">
         <div />
         <div>Item</div>
         <div className="text-right">Unit price</div>
         <div className="text-right">Qty</div>
-        <div className="text-right">Unit</div>
         <div className="text-right">Total</div>
         <div />
       </div>
@@ -220,6 +244,7 @@ export function LineItemsTable({ items, onChange }: LineItemsTableProps) {
                 updateItem(item.localId, field, value)
               }
               onRemove={() => removeItem(item.localId)}
+              currency={currency}
             />
           ))}
         </SortableContext>

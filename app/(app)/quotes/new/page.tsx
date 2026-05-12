@@ -2,13 +2,14 @@ import { getCompanyQuoteSettings } from "@/features/quotes/services/quote.servic
 import { QuoteBuilderPage } from "@/features/quotes/pages/quote-builder.page"
 
 export default async function NewQuotePage() {
-  const { defaultTaxPercent, discountThreshold } =
+  const { defaultTaxPercent, discountThreshold, currency } =
     await getCompanyQuoteSettings()
 
   return (
     <QuoteBuilderPage
       defaultTaxPercent={defaultTaxPercent}
       discountThreshold={discountThreshold}
+      currency={currency}
     />
   )
 }

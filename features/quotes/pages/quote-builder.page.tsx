@@ -36,12 +36,15 @@ import type {
 interface QuoteBuilderPageProps {
   defaultTaxPercent: number
   discountThreshold: number | null
+  currency: string
   quoteId?: string
   initial?: InitialQuoteData
 }
 
-function formatMoney(value: number) {
+function formatMoney(value: number, currency: string) {
   return value.toLocaleString(undefined, {
+    style: "currency",
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
@@ -50,6 +53,7 @@ function formatMoney(value: number) {
 export function QuoteBuilderPage({
   defaultTaxPercent,
   discountThreshold,
+  currency,
   quoteId,
   initial,
 }: QuoteBuilderPageProps) {
@@ -78,8 +82,7 @@ export function QuoteBuilderPage({
       discount_percent: initial?.discount_percent ?? 0,
       tax_percent: initial?.tax_percent ?? defaultTaxPercent,
     },
-    mode: "onSubmit",
-    reValidateMode: "onChange",
+    mode: "onChange",
   })
 
   // Reactive values for computed totals and derived UI state
@@ -137,6 +140,16 @@ export function QuoteBuilderPage({
 
   function addProductItem(product: ProductSearchResult) {
     const current = getValues("line_items")
+    const existing = current.findIndex((i) => i.product_id === product.id)
+    if (existing !== -1) {
+      setValue(
+        "line_items",
+        current.map((item, idx) =>
+          idx === existing ? { ...item, quantity: item.quantity + 1 } : item
+        )
+      )
+      return
+    }
     setValue("line_items", [
       ...current,
       {
@@ -301,7 +314,11 @@ export function QuoteBuilderPage({
               control={control}
               name="line_items"
               render={({ field }) => (
-                <LineItemsTable items={field.value} onChange={field.onChange} />
+                <LineItemsTable
+                  items={field.value}
+                  onChange={field.onChange}
+                  currency={currency}
+                />
               )}
             />
           </div>
@@ -317,7 +334,7 @@ export function QuoteBuilderPage({
               <div className="flex items-center justify-between">
                 <span className="text-ink-mute">Subtotal</span>
                 <span className="font-mono text-ink tabular-nums">
-                  {formatMoney(subtotal)}
+                  {formatMoney(subtotal, currency)}
                 </span>
               </div>
 
@@ -331,7 +348,7 @@ export function QuoteBuilderPage({
                     Discount %
                   </Label>
                   <span className="font-mono text-xs text-ink-mute tabular-nums">
-                    −{formatMoney(discountAmount)}
+                    −{formatMoney(discountAmount, currency)}
                   </span>
                 </div>
                 <Controller
@@ -370,7 +387,7 @@ export function QuoteBuilderPage({
                     Tax %
                   </Label>
                   <span className="font-mono text-xs text-ink-mute tabular-nums">
-                    +{formatMoney(taxAmount)}
+                    +{formatMoney(taxAmount, currency)}
                   </span>
                 </div>
                 <Controller
@@ -403,7 +420,7 @@ export function QuoteBuilderPage({
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-ink">Total</span>
                   <span className="font-mono text-base font-semibold text-ink tabular-nums">
-                    {formatMoney(total)}
+                    {formatMoney(total, currency)}
                   </span>
                 </div>
               </div>
@@ -433,13 +450,13 @@ export function QuoteBuilderPage({
               <div className="flex items-center justify-between">
                 <span className="text-ink-mute">Total cost</span>
                 <span className="font-mono text-ink-mute tabular-nums">
-                  {formatMoney(totalCost)}
+                  {formatMoney(totalCost, currency)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-ink-mute">Revenue</span>
                 <span className="font-mono text-ink tabular-nums">
-                  {formatMoney(total)}
+                  {formatMoney(total, currency)}
                 </span>
               </div>
               <div className="flex items-center justify-between border-t border-hairline pt-2">

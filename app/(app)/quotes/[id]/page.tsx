@@ -29,6 +29,7 @@ export default async function QuoteDetailPage({ params }: Props) {
     <QuoteBuilderPage
       defaultTaxPercent={settings.defaultTaxPercent}
       discountThreshold={settings.discountThreshold}
+      currency={settings.currency}
       quoteId={id}
       initial={initial}
     />

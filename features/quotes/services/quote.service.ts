@@ -273,7 +273,8 @@ export async function getCompanyQuoteSettings() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return { defaultTaxPercent: 0, discountThreshold: null }
+  if (!user)
+    return { defaultTaxPercent: 0, discountThreshold: null, currency: "USD" }
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -282,12 +283,12 @@ export async function getCompanyQuoteSettings() {
     .single()
 
   if (!profile?.company_id)
-    return { defaultTaxPercent: 0, discountThreshold: null }
+    return { defaultTaxPercent: 0, discountThreshold: null, currency: "USD" }
 
   const [{ data: company }, { data: rule }] = await Promise.all([
     supabase
       .from("companies")
-      .select("default_tax_percent")
+      .select("default_tax_percent, default_currency")
       .eq("id", profile.company_id)
       .single(),
     supabase
@@ -300,6 +301,7 @@ export async function getCompanyQuoteSettings() {
   return {
     defaultTaxPercent: Number(company?.default_tax_percent ?? 0),
     discountThreshold: rule ? Number(rule.threshold_percent) : null,
+    currency: company?.default_currency ?? "USD",
   }
 }
 
