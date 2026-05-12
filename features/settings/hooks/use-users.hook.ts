@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import {
-  inviteUserAction,
+  createUserAction,
   toggleUserActiveAction,
   updateUserRoleAction,
 } from "../actions/users.action"
@@ -20,20 +20,29 @@ export function useUsers() {
   })
 }
 
-export function useInviteUser() {
+export function useCreateUser() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ email, role }: { email: string; role: "manager" | "rep" }) =>
-      inviteUserAction(email, role),
+    mutationFn: ({
+      name,
+      email,
+      password,
+      role,
+    }: {
+      name: string
+      email: string
+      password: string
+      role: "manager" | "rep"
+    }) => createUserAction(name, email, password, role),
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error ?? "Failed to invite user")
+        toast.error(result.error ?? "Failed to create user")
         return
       }
-      toast.success("Invitation sent")
+      toast.success("User created")
       qc.invalidateQueries({ queryKey: USERS_KEY })
     },
-    onError: () => toast.error("Failed to invite user"),
+    onError: () => toast.error("Failed to create user"),
   })
 }
 
