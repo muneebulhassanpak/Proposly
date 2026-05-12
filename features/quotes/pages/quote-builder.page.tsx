@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Controller } from "react-hook-form"
-import { AlertTriangle, Eye, Plus } from "lucide-react"
+import { AlertTriangle, ArrowLeft, Eye, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/ui/date-picker"
@@ -74,6 +74,14 @@ export function QuoteBuilderPage({
 
   return (
     <form onSubmit={onSubmit} noValidate>
+      {/* Back link */}
+      <Button variant="ghost" size="sm" asChild className="mb-4 -ml-2">
+        <Link href={ROUTES.DASHBOARD}>
+          <ArrowLeft size={14} strokeWidth={1.5} />
+          Back to Dashboard
+        </Link>
+      </Button>
+
       {/* Page header */}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
@@ -134,39 +142,41 @@ export function QuoteBuilderPage({
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <Label>Client</Label>
-                <Controller
-                  control={control}
-                  name="client_id"
-                  render={({ field }) => (
-                    <ClientCombobox
-                      value={field.value}
-                      selectedClient={selectedClient}
-                      onChange={(id, client) => {
-                        field.onChange(id)
-                        setSelectedClient(client)
-                      }}
-                    />
-                  )}
-                />
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Client</Label>
+                  <Controller
+                    control={control}
+                    name="client_id"
+                    render={({ field }) => (
+                      <ClientCombobox
+                        value={field.value}
+                        selectedClient={selectedClient}
+                        onChange={(id, client) => {
+                          field.onChange(id)
+                          setSelectedClient(client)
+                        }}
+                      />
+                    )}
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label>Expiry date</Label>
-                <Controller
-                  control={control}
-                  name="expires_at"
-                  render={({ field }) => (
-                    <DatePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="No expiry"
-                      className="w-48"
-                      disablePast
-                    />
-                  )}
-                />
+                <div className="space-y-1.5">
+                  <Label>Expiry date</Label>
+                  <Controller
+                    control={control}
+                    name="expires_at"
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="No expiry"
+                        className="w-full"
+                        disablePast
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">

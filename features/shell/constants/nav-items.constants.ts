@@ -2,7 +2,6 @@ import type { LucideIcon } from "lucide-react"
 import {
   BarChart2,
   CheckSquare,
-  FileText,
   LayoutDashboard,
   LayoutTemplate,
   Package,
@@ -22,14 +21,12 @@ export type NavItem = {
 export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
   rep: [
     { label: "Dashboard", href: ROUTES.DASHBOARD, icon: LayoutDashboard },
-    { label: "Quotes", href: ROUTES.QUOTES, icon: FileText },
     { label: "Templates", href: ROUTES.TEMPLATES, icon: LayoutTemplate },
   ],
   manager: [
     { label: "Dashboard", href: ROUTES.DASHBOARD, icon: LayoutDashboard },
     { label: "Approvals", href: ROUTES.MANAGER_APPROVALS, icon: CheckSquare },
     { label: "Analytics", href: ROUTES.MANAGER_ANALYTICS, icon: BarChart2 },
-    { label: "Quotes", href: ROUTES.QUOTES, icon: FileText },
   ],
   admin: [
     { label: "Product Catalog", href: ROUTES.ADMIN_CATALOG, icon: Package },
