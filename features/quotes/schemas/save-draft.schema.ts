@@ -1,25 +1,32 @@
 import { z } from "zod"
 
-export const lineItemSchema = z.object({
-  product_id: z.string().uuid().nullable(),
-  name: z.string().min(1, "Item name is required").max(100),
+import { lineItemFieldsSchema } from "./quote-builder.schema"
+
+// Extends shared field constraints with server-side defaults
+export const lineItemSchema = lineItemFieldsSchema.extend({
   description: z.string().default(""),
-  unit_price: z.number().min(0),
-  cost_price: z.number().min(0).nullable(),
-  quantity: z.number().int().min(1),
   unit: z.string().default("item"),
-  sort_order: z.number().int(),
 })
 
-export const saveDraftSchema = z.object({
-  quote_id: z.string().uuid().optional(),
-  title: z.string().min(1, "Quote title is required").max(100),
-  client_id: z.string().uuid().nullable(),
-  expires_at: z.string().nullable(),
-  notes: z.string().default(""),
-  line_items: z.array(lineItemSchema),
-  discount_percent: z.number().min(0).max(100),
-  tax_percent: z.number().min(0).max(100),
-})
+export const saveDraftSchema = z
+  .object({
+    quote_id: z.string().uuid().optional(),
+    title: z.string().min(1, "Quote title is required").max(100),
+    client_id: z.string().uuid().nullable(),
+    expires_at: z.string().nullable(),
+    notes: z.string().default(""),
+    line_items: z.array(lineItemSchema),
+    discount_percent: z.number().min(0).max(100),
+    tax_percent: z.number().min(0).max(100),
+  })
+  .refine(
+    (data) => {
+      const productIds = data.line_items
+        .map((i) => i.product_id)
+        .filter((id): id is string => id !== null)
+      return productIds.length === new Set(productIds).size
+    },
+    { message: "Duplicate catalog items are not allowed", path: ["line_items"] }
+  )
 
 export type SaveDraftInput = z.infer<typeof saveDraftSchema>

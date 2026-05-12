@@ -1,7 +1,8 @@
 import { z } from "zod"
 
-const formLineItemSchema = z.object({
-  localId: z.string(),
+// Shared field constraints — imported by save-draft.schema.ts (server).
+// Any change here must be reflected there and vice-versa.
+export const lineItemFieldsSchema = z.object({
   product_id: z.string().uuid().nullable(),
   name: z.string().min(1, "Item name is required").max(100),
   description: z.string(),
@@ -10,6 +11,11 @@ const formLineItemSchema = z.object({
   quantity: z.number().int().min(1),
   unit: z.string(),
   sort_order: z.number().int(),
+})
+
+// Client-only: adds localId used for drag-and-drop keying
+const formLineItemSchema = lineItemFieldsSchema.extend({
+  localId: z.string(),
 })
 
 export const quoteBuilderSchema = z.object({
