@@ -67,21 +67,23 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* New Proposal CTA */}
-        <SidebarGroup className="px-3 pt-3 pb-1">
-          <SidebarGroupContent>
-            <SidebarMenuButton
-              asChild
-              tooltip="New Proposal"
-              className="h-8 w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 data-[active=true]:bg-primary/90"
-            >
-              <Link href={ROUTES.NEW_QUOTE}>
-                <Plus size={14} strokeWidth={1.5} />
-                <span>New proposal</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* New Proposal CTA — Reps only */}
+        {profile.role === USER_ROLES.REP && (
+          <SidebarGroup className="px-3 pt-3 pb-1">
+            <SidebarGroupContent>
+              <SidebarMenuButton
+                asChild
+                tooltip="New Proposal"
+                className="h-8 w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 data-[active=true]:bg-primary/90"
+              >
+                <Link href={ROUTES.NEW_QUOTE}>
+                  <Plus size={14} strokeWidth={1.5} />
+                  <span>New proposal</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Main nav */}
         <SidebarGroup>
