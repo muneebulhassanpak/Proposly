@@ -12,8 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import type { UserRole } from "@/lib/auth.utils"
 import { ROUTES } from "@/lib/constants/routes.constants"
 import { QUOTE_STATUS } from "@/lib/constants/quote.constants"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { useDashboardQuotes } from "../hooks/use-dashboard-quotes.hook"
 import { useDashboardTable } from "../hooks/use-dashboard-table.hook"
 import { SummaryCards } from "../components/summary-cards.component"
@@ -21,9 +23,10 @@ import { QuotesTable } from "../components/quotes-table.component"
 
 interface DashboardPageProps {
   userId: string
+  role: UserRole
 }
 
-export function DashboardPage({ userId }: DashboardPageProps) {
+export function DashboardPage({ userId, role }: DashboardPageProps) {
   const {
     summary,
     isSummaryLoading,
@@ -84,12 +87,14 @@ export function DashboardPage({ userId }: DashboardPageProps) {
               <SelectItem value={QUOTE_STATUS.LOST}>Lost</SelectItem>
             </SelectContent>
           </Select>
-          <Button size="sm" asChild className="ml-auto">
-            <Link href={ROUTES.NEW_QUOTE}>
-              <Plus size={14} strokeWidth={1.5} />
-              New Quote
-            </Link>
-          </Button>
+          {role === USER_ROLES.REP && (
+            <Button size="sm" asChild className="ml-auto">
+              <Link href={ROUTES.NEW_QUOTE}>
+                <Plus size={14} strokeWidth={1.5} />
+                New Quote
+              </Link>
+            </Button>
+          )}
         </div>
 
         <QuotesTable table={table} columns={columns} isLoading={isLoading} />
