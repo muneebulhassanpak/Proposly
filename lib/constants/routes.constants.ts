@@ -1,0 +1,15 @@
+export const ROUTES = {
+  LOGIN: "/login",
+  FORBIDDEN: "/403",
+  DASHBOARD: "/dashboard",
+  QUOTES: "/quotes",
+  NEW_QUOTE: "/quotes/new",
+  QUOTE: (id: string) => `/quotes/${id}`,
+  TEMPLATES: "/templates",
+  ADMIN_SETTINGS: "/admin/settings",
+  ADMIN_CATALOG: "/admin/catalog",
+  ADMIN_DISCOUNT_RULES: "/admin/discount-rules",
+  ADMIN_USERS: "/admin/users",
+  MANAGER_APPROVALS: "/manager/approvals",
+  MANAGER_ANALYTICS: "/manager/analytics",
+} as const
