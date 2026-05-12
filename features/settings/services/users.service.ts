@@ -1,11 +1,8 @@
-import { createAdminClient } from "@/lib/supabase/admin.service"
-import { createClient as createBrowserClient } from "@/lib/supabase/browser.service"
-import { createClient as createServerClient } from "@/lib/supabase/server.service"
-import type { CreateUserFormData } from "../schemas/user.schema"
-import type { UserProfile, UserRole } from "../settings.types"
+import { createClient } from "@/lib/supabase/browser.service"
+import type { UserProfile } from "../settings.types"
 
 export async function getUsersClient(): Promise<UserProfile[]> {
-  const supabase = createBrowserClient()
+  const supabase = createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -26,48 +23,4 @@ export async function getUsersClient(): Promise<UserProfile[]> {
     .order("created_at", { ascending: true })
 
   return data ?? []
-}
-
-// --- Server-side mutations (called from server actions only) ---
-
-export async function upsertUserProfile(
-  userId: string,
-  data: {
-    email: string
-    full_name: string
-    role: CreateUserFormData["role"]
-    company_id: string
-  }
-): Promise<{ error: string | null }> {
-  const admin = createAdminClient()
-  const { error } = await admin.from("profiles").upsert({ id: userId, ...data })
-  return { error: error?.message ?? null }
-}
-
-export async function updateUserRole(
-  userId: string,
-  role: UserRole,
-  companyId: string
-): Promise<{ error: string | null }> {
-  const supabase = await createServerClient()
-  const { error } = await supabase
-    .from("profiles")
-    .update({ role })
-    .eq("id", userId)
-    .eq("company_id", companyId)
-  return { error: error?.message ?? null }
-}
-
-export async function toggleUserActive(
-  userId: string,
-  isActive: boolean,
-  companyId: string
-): Promise<{ error: string | null }> {
-  const supabase = await createServerClient()
-  const { error } = await supabase
-    .from("profiles")
-    .update({ is_active: isActive })
-    .eq("id", userId)
-    .eq("company_id", companyId)
-  return { error: error?.message ?? null }
 }

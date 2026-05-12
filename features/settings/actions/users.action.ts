@@ -9,7 +9,7 @@ import {
   toggleUserActive,
   updateUserRole,
   upsertUserProfile,
-} from "../services/users.service"
+} from "../services/users-mutations.service"
 
 export type UserActionResult = { success: boolean; error?: string }
 

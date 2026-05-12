@@ -9,7 +9,7 @@ import {
   logPriceChange,
   toggleProductActive,
   updateProduct,
-} from "../services/product.service"
+} from "../services/product-mutations.service"
 
 export type ProductActionResult = { success: boolean; error?: string }
 
