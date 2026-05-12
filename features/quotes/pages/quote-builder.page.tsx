@@ -205,8 +205,9 @@ export function QuoteBuilderPage({
                 <Input
                   id="quote-title"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => setTitle(e.target.value.slice(0, 100))}
                   placeholder="e.g. Brand Identity Package"
+                  maxLength={100}
                 />
               </div>
 
@@ -303,7 +304,12 @@ export function QuoteBuilderPage({
                   step="any"
                   value={discountPercent === 0 ? "" : discountPercent}
                   onChange={(e) =>
-                    setDiscountPercent(parseFloat(e.target.value) || 0)
+                    setDiscountPercent(
+                      Math.min(
+                        100,
+                        Math.max(0, parseFloat(e.target.value) || 0)
+                      )
+                    )
                   }
                   placeholder="0"
                   className="h-8 text-right font-mono text-sm tabular-nums"
@@ -331,7 +337,12 @@ export function QuoteBuilderPage({
                   step="any"
                   value={taxPercent === 0 ? "" : taxPercent}
                   onChange={(e) =>
-                    setTaxPercent(parseFloat(e.target.value) || 0)
+                    setTaxPercent(
+                      Math.min(
+                        100,
+                        Math.max(0, parseFloat(e.target.value) || 0)
+                      )
+                    )
                   }
                   placeholder="0"
                   className="h-8 text-right font-mono text-sm tabular-nums"

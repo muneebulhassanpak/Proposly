@@ -72,9 +72,9 @@ function SortableRow({
       <div className="min-w-0 space-y-1">
         <Input
           value={item.name}
-          onChange={(e) => onUpdate("name", e.target.value)}
+          onChange={(e) => onUpdate("name", e.target.value.slice(0, 100))}
           placeholder="Item name"
-          className="h-8 text-sm"
+          className={`h-8 text-sm${!item.name.trim() ? "border-crimson/50 focus:ring-crimson/40" : ""}`}
         />
         <Input
           value={item.description}
@@ -84,25 +84,40 @@ function SortableRow({
         />
       </div>
 
-      {/* Unit price */}
-      <Input
-        type="number"
-        min={0}
-        value={item.unit_price === 0 ? "" : item.unit_price}
-        onChange={(e) =>
-          onUpdate("unit_price", parseFloat(e.target.value) || 0)
-        }
-        placeholder="0.00"
-        className="h-8 text-right font-mono text-sm tabular-nums"
-      />
+      {/* Unit price — read-only for catalog items */}
+      {item.product_id ? (
+        <div className="h-8 truncate rounded-[6px] bg-paper px-3 text-right font-mono text-sm leading-8 text-ink-mute tabular-nums">
+          {item.unit_price.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </div>
+      ) : (
+        <Input
+          type="number"
+          min={0.01}
+          step="any"
+          value={item.unit_price === 0 ? "" : item.unit_price}
+          onChange={(e) =>
+            onUpdate("unit_price", Math.max(0, parseFloat(e.target.value) || 0))
+          }
+          placeholder="0.00"
+          className="h-8 text-right font-mono text-sm tabular-nums"
+        />
+      )}
 
       {/* Qty */}
       <Input
         type="number"
-        min={0.001}
-        step="any"
-        value={item.quantity === 1 ? "1" : item.quantity}
-        onChange={(e) => onUpdate("quantity", parseFloat(e.target.value) || 1)}
+        min={1}
+        step={1}
+        value={item.quantity}
+        onChange={(e) =>
+          onUpdate(
+            "quantity",
+            Math.max(1, Math.floor(Number(e.target.value))) || 1
+          )
+        }
         className="h-8 text-right font-mono text-sm tabular-nums"
       />
 
