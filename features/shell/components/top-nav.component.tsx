@@ -1,6 +1,7 @@
 "use client"
 
-import { Bell, Menu } from "lucide-react"
+import { Bell, Menu, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -21,6 +22,7 @@ interface TopNavProps {
 }
 
 export function TopNav({ profile }: TopNavProps) {
+  const { resolvedTheme, setTheme } = useTheme()
   const initials =
     profile.full_name
       ?.split(" ")
@@ -57,6 +59,21 @@ export function TopNav({ profile }: TopNavProps) {
       </Sheet>
 
       <div className="flex-1" />
+
+      {/* Theme toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Toggle theme"
+        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+        className="mr-1"
+      >
+        {resolvedTheme === "dark" ? (
+          <Sun size={18} strokeWidth={1.5} />
+        ) : (
+          <Moon size={18} strokeWidth={1.5} />
+        )}
+      </Button>
 
       {/* Notification bell — wired in Sprint 08 */}
       <Button
