@@ -3,6 +3,13 @@
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -12,12 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { useCreateProduct, useUpdateProduct } from "../hooks/use-products.hook"
@@ -26,7 +27,7 @@ import type { Product } from "../products.types"
 
 const UNITS = ["hour", "page", "project", "item", "word", "custom"] as const
 
-interface ProductSheetProps {
+interface ProductDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   product?: Product | null
@@ -42,11 +43,11 @@ const DEFAULT_FORM: ProductFormData = {
   is_active: true,
 }
 
-export function ProductSheet({
+export function ProductDialog({
   open,
   onOpenChange,
   product,
-}: ProductSheetProps) {
+}: ProductDialogProps) {
   const isEdit = !!product
   const create = useCreateProduct()
   const update = useUpdateProduct()
@@ -87,13 +88,17 @@ export function ProductSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-md">
-        <SheetHeader className="mb-6">
-          <SheetTitle>{isEdit ? "Edit product" : "Add product"}</SheetTitle>
-        </SheetHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? "Edit product" : "Add product"}</DialogTitle>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          id="product-dialog-form"
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
           <div className="space-y-1.5">
             <Label htmlFor="p-name">Name</Label>
             <Input
@@ -186,21 +191,14 @@ export function ProductSheet({
             />
             <Label htmlFor="p-active">Active</Label>
           </div>
-
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" loading={isPending}>
-              {isEdit ? "Save changes" : "Add product"}
-            </Button>
-          </div>
         </form>
-      </SheetContent>
-    </Sheet>
+
+        <DialogFooter showCloseButton>
+          <Button type="submit" form="product-dialog-form" loading={isPending}>
+            {isEdit ? "Save changes" : "Add product"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

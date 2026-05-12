@@ -34,7 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { PriceHistoryDialog } from "../components/price-history-dialog.component"
-import { ProductSheet } from "../components/product-sheet.component"
+import { ProductDialog } from "../components/product-dialog.component"
 import { useProducts, useToggleProductActive } from "../hooks/use-products.hook"
 import type { Product } from "../products.types"
 
@@ -313,7 +313,7 @@ export function CatalogPage() {
         <DataTablePagination table={table} />
       </div>
 
-      <ProductSheet
+      <ProductDialog
         key={editProduct?.id ?? "new"}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
