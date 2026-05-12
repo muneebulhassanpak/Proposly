@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
+import type { DashboardQuote } from "../dashboard.types"
 import {
   getDashboardQuotes,
   getDashboardSummary,
 } from "../services/dashboard.service"
+
+const EMPTY_QUOTES: DashboardQuote[] = []
 
 export function useDashboardQuotes(userId: string) {
   const [search, setSearch] = useState("")
@@ -22,24 +25,28 @@ export function useDashboardQuotes(userId: string) {
     queryFn: () => getDashboardQuotes(userId),
   })
 
-  const quotes = quotesQuery.data ?? []
+  const quotes = quotesQuery.data ?? EMPTY_QUOTES
 
-  const filtered = quotes.filter((q) => {
-    const searchLower = search.toLowerCase()
-    const matchesSearch =
-      !search ||
-      q.title.toLowerCase().includes(searchLower) ||
-      (q.clientName ?? "").toLowerCase().includes(searchLower) ||
-      (q.clientCompanyName ?? "").toLowerCase().includes(searchLower)
+  const filtered = useMemo(
+    () =>
+      quotes.filter((q) => {
+        const searchLower = search.toLowerCase()
+        const matchesSearch =
+          !search ||
+          q.title.toLowerCase().includes(searchLower) ||
+          (q.clientName ?? "").toLowerCase().includes(searchLower) ||
+          (q.clientCompanyName ?? "").toLowerCase().includes(searchLower)
 
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "pending_approval"
-        ? q.hasPendingApproval
-        : q.status === statusFilter)
+        const matchesStatus =
+          statusFilter === "all" ||
+          (statusFilter === "pending_approval"
+            ? q.hasPendingApproval
+            : q.status === statusFilter)
 
-    return matchesSearch && matchesStatus
-  })
+        return matchesSearch && matchesStatus
+      }),
+    [quotes, search, statusFilter]
+  )
 
   return {
     summary: summaryQuery.data,
