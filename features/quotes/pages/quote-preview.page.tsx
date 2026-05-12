@@ -62,7 +62,7 @@ export function QuotePreviewPage({ quoteData }: QuotePreviewPageProps) {
               <img
                 src={quoteData.companyLogoUrl}
                 alt={quoteData.companyName}
-                className="h-10 w-auto object-contain"
+                className="size-10 rounded-full object-cover"
               />
             ) : (
               <span className="text-lg font-semibold text-white">
