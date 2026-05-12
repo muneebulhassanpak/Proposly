@@ -7,6 +7,7 @@ import { AlertTriangle, Eye, Plus } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -56,8 +57,8 @@ export function QuoteBuilderPage({
   const [selectedClient, setSelectedClient] = useState<Client | null>(
     initial?.client ?? null
   )
-  const [expiresAt, setExpiresAt] = useState(
-    initial?.expires_at ? initial.expires_at.split("T")[0] : ""
+  const [expiresAt, setExpiresAt] = useState<Date | null>(
+    initial?.expires_at ? new Date(initial.expires_at) : null
   )
   const [notes, setNotes] = useState(initial?.notes ?? "")
   const [items, setItems] = useState<LineItemRow[]>(initial?.line_items ?? [])
@@ -94,7 +95,7 @@ export function QuoteBuilderPage({
         quote_id: quoteId,
         title,
         client_id: clientId,
-        expires_at: expiresAt ? new Date(expiresAt).toISOString() : null,
+        expires_at: expiresAt ? expiresAt.toISOString() : null,
         notes,
         line_items: items.map((item, i) => ({
           product_id: item.product_id,
@@ -222,12 +223,11 @@ export function QuoteBuilderPage({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="quote-expiry">Expiry date</Label>
-                <Input
-                  id="quote-expiry"
-                  type="date"
+                <Label>Expiry date</Label>
+                <DatePicker
                   value={expiresAt}
-                  onChange={(e) => setExpiresAt(e.target.value)}
+                  onChange={setExpiresAt}
+                  placeholder="No expiry"
                   className="w-48"
                 />
               </div>
