@@ -19,6 +19,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { GripVertical, Trash2 } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
+import { DEFAULT_PRODUCT_UNIT } from "@/features/products/constants/product.constants"
 import type { LineItemRow } from "../quotes.types"
 
 interface LineItemsTableProps {
@@ -105,7 +106,7 @@ function SortableRow({
             })}
           </span>
           <span className="text-xs text-ink-mute capitalize">
-            / {item.unit || "item"}
+            / {item.unit || DEFAULT_PRODUCT_UNIT}
           </span>
         </div>
       ) : (
@@ -125,7 +126,7 @@ function SortableRow({
             className="h-8 min-w-0 flex-1 text-right font-mono text-sm tabular-nums"
           />
           <span className="shrink-0 text-xs text-ink-mute capitalize">
-            / {item.unit || "item"}
+            / {item.unit || DEFAULT_PRODUCT_UNIT}
           </span>
         </div>
       )}

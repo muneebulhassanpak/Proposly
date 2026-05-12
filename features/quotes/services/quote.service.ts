@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server.service"
+import { DEFAULT_PRODUCT_UNIT } from "@/features/products/constants/product.constants"
 import { QUOTE_STATUS } from "../constants/quote.constants"
 import type { SaveDraftInput } from "../schemas/save-draft.schema"
 import type {
@@ -136,7 +137,7 @@ export async function saveDraft(
           unit_price: item.unit_price,
           cost_price: item.cost_price,
           quantity: item.quantity,
-          unit: item.unit || "item",
+          unit: item.unit || DEFAULT_PRODUCT_UNIT,
           line_total: item.unit_price * item.quantity,
           sort_order: i,
         }))
@@ -195,7 +196,7 @@ export async function saveDraft(
         unit_price: item.unit_price,
         cost_price: item.cost_price,
         quantity: item.quantity,
-        unit: item.unit || "item",
+        unit: item.unit || DEFAULT_PRODUCT_UNIT,
         line_total: item.unit_price * item.quantity,
         sort_order: i,
       }))
@@ -253,7 +254,7 @@ export async function getQuoteDraft(
     unit_price: Number(li.unit_price),
     cost_price: li.cost_price != null ? Number(li.cost_price) : null,
     quantity: Number(li.quantity),
-    unit: li.unit ?? "item",
+    unit: li.unit ?? DEFAULT_PRODUCT_UNIT,
     sort_order: i,
   }))
 

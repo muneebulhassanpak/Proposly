@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { ROUTES } from "@/lib/constants/routes.constants"
+import { DEFAULT_PRODUCT_UNIT } from "@/features/products/constants/product.constants"
 import { saveDraftAction } from "../actions/save-draft.action"
 import {
   quoteBuilderSchema,
@@ -131,7 +132,7 @@ export function useQuoteBuilder({
         cost_price:
           product.cost_price != null ? Number(product.cost_price) : null,
         quantity: 1,
-        unit: product.unit ?? "item",
+        unit: product.unit ?? DEFAULT_PRODUCT_UNIT,
         sort_order: current.length,
       },
     ])
@@ -149,7 +150,7 @@ export function useQuoteBuilder({
         unit_price: 0,
         cost_price: null,
         quantity: 1,
-        unit: "item",
+        unit: DEFAULT_PRODUCT_UNIT,
         sort_order: current.length,
       },
     ])

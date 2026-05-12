@@ -2,15 +2,20 @@
 
 import { useState } from "react"
 
+import {
+  DEFAULT_PRODUCT_UNIT,
+  PRODUCT_UNITS,
+} from "../constants/product.constants"
 import { useCreateProduct, useUpdateProduct } from "./use-products.hook"
 import type { ProductFormData } from "../schemas/product.schema"
+import type { ProductUnit } from "../constants/product.constants"
 import type { Product } from "../products.types"
 
 const DEFAULT_FORM: ProductFormData = {
   name: "",
   description: null,
   category: null,
-  unit: "item",
+  unit: DEFAULT_PRODUCT_UNIT,
   unit_price: 0,
   cost_price: null,
   is_active: true,
@@ -31,7 +36,9 @@ export function useProductDialog(
           name: product.name,
           description: product.description,
           category: product.category,
-          unit: (product.unit ?? "item") as ProductFormData["unit"],
+          unit: (PRODUCT_UNITS.includes(product.unit as ProductUnit)
+            ? product.unit
+            : DEFAULT_PRODUCT_UNIT) as ProductUnit,
           unit_price: product.unit_price,
           cost_price: product.cost_price,
           is_active: product.is_active ?? true,
