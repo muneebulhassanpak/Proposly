@@ -183,11 +183,11 @@
   --chart-5: var(--slate-status);
 
   /* Sidebar */
-  --sidebar:                     var(--paper-deep);
-  --sidebar-foreground:          var(--ink);
+  --sidebar:                     var(--surface);
+  --sidebar-foreground:          var(--ink-mute);
   --sidebar-primary:             var(--cobalt);
   --sidebar-primary-foreground:  #ffffff;
-  --sidebar-accent:              var(--hairline);
+  --sidebar-accent:              var(--paper);
   --sidebar-accent-foreground:   var(--ink);
   --sidebar-border:              var(--hairline);
   --sidebar-ring:                var(--cobalt);
@@ -255,10 +255,10 @@
   --chart-4:                 var(--crimson);
   --chart-5:                 var(--slate-status);
   --sidebar:                 var(--surface);
-  --sidebar-foreground:      var(--ink);
+  --sidebar-foreground:      var(--ink-mute);
   --sidebar-primary:         #4F67E8;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:          rgba(255, 255, 255, 0.08);
+  --sidebar-accent:          var(--paper);
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border:          var(--hairline);
   --sidebar-ring:            #4F67E8;
