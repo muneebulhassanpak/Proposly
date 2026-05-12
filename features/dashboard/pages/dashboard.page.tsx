@@ -39,17 +39,9 @@ export function DashboardPage({ userId }: DashboardPageProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-ink">Dashboard</h1>
-          <p className="mt-1 text-sm text-ink-mute">Your quotes at a glance.</p>
-        </div>
-        <Button size="sm" asChild>
-          <Link href={ROUTES.NEW_QUOTE}>
-            <Plus size={14} strokeWidth={1.5} />
-            New Quote
-          </Link>
-        </Button>
+      <div>
+        <h1 className="text-xl font-semibold text-ink">Dashboard</h1>
+        <p className="mt-1 text-sm text-ink-mute">Your quotes at a glance.</p>
       </div>
 
       <SummaryCards summary={summary} isLoading={isSummaryLoading} />
@@ -78,6 +70,12 @@ export function DashboardPage({ userId }: DashboardPageProps) {
               <SelectItem value={QUOTE_STATUS.LOST}>Lost</SelectItem>
             </SelectContent>
           </Select>
+          <Button size="sm" asChild className="ml-auto">
+            <Link href={ROUTES.NEW_QUOTE}>
+              <Plus size={14} strokeWidth={1.5} />
+              New Quote
+            </Link>
+          </Button>
         </div>
 
         <QuotesTable table={table} columns={columns} isLoading={isLoading} />
