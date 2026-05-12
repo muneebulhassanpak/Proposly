@@ -219,7 +219,7 @@ export function LineItemsTable({
   return (
     <div>
       {/* Column headers */}
-      <div className="grid grid-cols-[20px_minmax(0,_400px)_1fr_80px_130px_32px] gap-2 border-b border-hairline pb-2 text-xs text-ink-mute">
+      <div className="grid grid-cols-[20px_minmax(0,400px)_1fr_80px_130px_32px] gap-2 border-b border-hairline pb-2 text-xs text-ink-mute">
         <div />
         <div>Item</div>
         <div className="text-right">Unit price</div>
