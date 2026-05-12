@@ -21,7 +21,10 @@ export function useDashboardTable(quotes: DashboardQuote[]) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 20 } },
+    initialState: {
+      sorting: [{ id: "updatedAt", desc: true }],
+      pagination: { pageSize: 20 },
+    },
   })
 
   return { table, columns }

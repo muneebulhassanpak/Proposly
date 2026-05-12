@@ -6,6 +6,7 @@ import { Eye, Pencil } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { DataTableSortableHeader } from "@/components/ui/data-table-sortable-header"
 import { ROUTES } from "@/lib/constants/routes.constants"
 import { QUOTE_STATUS } from "@/lib/constants/quote.constants"
 import type { DashboardQuote } from "../dashboard.types"
@@ -52,14 +53,18 @@ export function getDashboardColumns(): ColumnDef<DashboardQuote>[] {
   return [
     {
       accessorKey: "title",
-      header: "Title",
+      header: ({ column }) => (
+        <DataTableSortableHeader column={column} label="Title" />
+      ),
       cell: ({ row }) => (
         <span className="font-medium text-ink">{row.original.title}</span>
       ),
     },
     {
       accessorKey: "clientName",
-      header: "Client",
+      header: ({ column }) => (
+        <DataTableSortableHeader column={column} label="Client" />
+      ),
       cell: ({ row }) => (
         <div>
           <p className="text-ink">{row.original.clientName ?? "—"}</p>
@@ -74,13 +79,16 @@ export function getDashboardColumns(): ColumnDef<DashboardQuote>[] {
     {
       accessorKey: "versionNumber",
       header: "Ver.",
+      enableSorting: false,
       cell: ({ row }) => (
         <span className="text-ink-mute">v{row.original.versionNumber}</span>
       ),
     },
     {
       accessorKey: "total",
-      header: "Value",
+      header: ({ column }) => (
+        <DataTableSortableHeader column={column} label="Value" />
+      ),
       cell: ({ row }) => (
         <span className="font-mono text-ink tabular-nums">
           {row.original.total.toLocaleString(undefined, {
@@ -93,7 +101,9 @@ export function getDashboardColumns(): ColumnDef<DashboardQuote>[] {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: ({ column }) => (
+        <DataTableSortableHeader column={column} label="Status" />
+      ),
       cell: ({ row }) => {
         const { label, variant } = getStatusBadge(
           row.original.status,
@@ -104,7 +114,9 @@ export function getDashboardColumns(): ColumnDef<DashboardQuote>[] {
     },
     {
       accessorKey: "updatedAt",
-      header: "Updated",
+      header: ({ column }) => (
+        <DataTableSortableHeader column={column} label="Updated" />
+      ),
       cell: ({ row }) => (
         <span className="text-ink-mute">
           {new Date(row.original.updatedAt).toLocaleDateString()}
@@ -113,6 +125,7 @@ export function getDashboardColumns(): ColumnDef<DashboardQuote>[] {
     },
     {
       id: "actions",
+      enableSorting: false,
       cell: ({ row }) => {
         const id = row.original.id
         const isDraft = row.original.status === QUOTE_STATUS.DRAFT
