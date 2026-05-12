@@ -110,7 +110,7 @@ export async function saveDraft(
       .single()
     if (!version) return { success: false, error: "Draft version not found" }
 
-    await supabase
+    const { error: vUpdateErr } = await supabase
       .from("quote_versions")
       .update({
         subtotal,
@@ -121,27 +121,32 @@ export async function saveDraft(
         total,
       })
       .eq("id", version.id)
+    if (vUpdateErr) return { success: false, error: vUpdateErr.message }
 
-    await supabase
+    const { error: deleteErr } = await supabase
       .from("quote_line_items")
       .delete()
       .eq("version_id", version.id)
+    if (deleteErr) return { success: false, error: deleteErr.message }
 
     if (input.line_items.length > 0) {
-      await supabase.from("quote_line_items").insert(
-        input.line_items.map((item, i) => ({
-          version_id: version.id,
-          product_id: item.product_id,
-          name: item.name,
-          description: item.description || null,
-          unit_price: item.unit_price,
-          cost_price: item.cost_price,
-          quantity: item.quantity,
-          unit: item.unit || DEFAULT_PRODUCT_UNIT,
-          line_total: item.unit_price * item.quantity,
-          sort_order: i,
-        }))
-      )
+      const { error: insertErr } = await supabase
+        .from("quote_line_items")
+        .insert(
+          input.line_items.map((item, i) => ({
+            version_id: version.id,
+            product_id: item.product_id,
+            name: item.name,
+            description: item.description || null,
+            unit_price: item.unit_price,
+            cost_price: item.cost_price,
+            quantity: item.quantity,
+            unit: item.unit || DEFAULT_PRODUCT_UNIT,
+            line_total: item.unit_price * item.quantity,
+            sort_order: i,
+          }))
+        )
+      if (insertErr) return { success: false, error: insertErr.message }
     }
 
     return { success: true, quoteId: input.quote_id, versionId: version.id }
@@ -187,7 +192,7 @@ export async function saveDraft(
     }
 
   if (input.line_items.length > 0) {
-    await supabase.from("quote_line_items").insert(
+    const { error: insertErr } = await supabase.from("quote_line_items").insert(
       input.line_items.map((item, i) => ({
         version_id: version.id,
         product_id: item.product_id,
@@ -201,6 +206,7 @@ export async function saveDraft(
         sort_order: i,
       }))
     )
+    if (insertErr) return { success: false, error: insertErr.message }
   }
 
   return { success: true, quoteId: quote.id, versionId: version.id }
