@@ -1,5 +1,7 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
+
 import { requireRole } from "@/lib/auth.utils"
 import { createClient } from "@/lib/supabase/server.service"
 import { discountRuleSchema } from "../schemas/discount-rules.schema"
@@ -43,5 +45,7 @@ export async function upsertDiscountRuleAction(
       })
 
   if (error) return { error: error.message }
+
+  revalidatePath("/admin/discount-rules")
   return { success: true }
 }

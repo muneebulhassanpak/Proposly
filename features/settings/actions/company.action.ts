@@ -1,5 +1,7 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
+
 import { requireRole } from "@/lib/auth.utils"
 import { createClient } from "@/lib/supabase/server.service"
 import { companySchema } from "../schemas/company.schema"
@@ -61,5 +63,7 @@ export async function updateCompanyAction(
     .eq("id", profile.company_id)
 
   if (error) return { error: error.message }
+
+  revalidatePath("/admin/settings")
   return { success: true }
 }
