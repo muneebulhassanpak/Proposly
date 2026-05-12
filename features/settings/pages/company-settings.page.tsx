@@ -1,8 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { useActionState, useEffect, useRef, useState } from "react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,36 +13,25 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { SUPPORTED_CURRENCIES } from "@/lib/constants/currencies.constants"
-import { updateCompanyAction } from "../actions/company.action"
 import type { Company } from "../settings.types"
+import { useCompanySettings } from "../hooks/use-company-settings.hook"
 
 interface CompanySettingsPageProps {
   company: Company | null
 }
 
 export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
-  const [state, formAction, isPending] = useActionState(
-    updateCompanyAction,
-    null
-  )
-  const [logoPreview, setLogoPreview] = useState<string | null>(
-    company?.logo_url ?? null
-  )
-  const [brandColor, setBrandColor] = useState(
-    company?.brand_color ?? "#1E40D8"
-  )
-  const [currency, setCurrency] = useState(company?.default_currency ?? "USD")
-  const currencyInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (state?.success) toast.success("Settings saved")
-    if (state?.error) toast.error(state.error)
-  }, [state])
-
-  // Keep hidden currency input in sync
-  useEffect(() => {
-    if (currencyInputRef.current) currencyInputRef.current.value = currency
-  }, [currency])
+  const {
+    formAction,
+    isPending,
+    logoPreview,
+    onLogoChange,
+    brandColor,
+    setBrandColor,
+    currency,
+    setCurrency,
+    currencyInputRef,
+  } = useCompanySettings(company)
 
   return (
     <div>
@@ -102,7 +89,7 @@ export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
                   className="w-64 cursor-pointer"
                   onChange={(e) => {
                     const file = e.target.files?.[0]
-                    if (file) setLogoPreview(URL.createObjectURL(file))
+                    if (file) onLogoChange(file)
                   }}
                 />
                 <p className="mt-1 text-xs text-ink-faint">
