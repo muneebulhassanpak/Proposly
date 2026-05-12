@@ -44,7 +44,6 @@ export function ProductSearchCombobox({
     queryKey: ["products-search", debouncedSearch],
     queryFn: () => searchProductsAction(debouncedSearch),
     staleTime: 30_000,
-    enabled: debouncedSearch.length > 0,
   })
 
   return (
@@ -59,7 +58,7 @@ export function ProductSearchCombobox({
           Search catalog…
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="start">
+      <PopoverContent className="w-96 p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="Type product name…"
@@ -67,45 +66,37 @@ export function ProductSearchCombobox({
             onValueChange={setSearch}
           />
           <CommandList>
-            {debouncedSearch.length === 0 ? (
-              <CommandEmpty className="py-4 text-center text-sm text-ink-mute">
-                Start typing to search the catalog.
-              </CommandEmpty>
-            ) : (
-              <>
-                <CommandEmpty className="py-4 text-center text-sm text-ink-mute">
-                  No products found.
-                </CommandEmpty>
-                {products.length > 0 && (
-                  <CommandGroup>
-                    {products.map((product) => (
-                      <CommandItem
-                        key={product.id}
-                        value={product.id}
-                        onSelect={() => {
-                          onSelect(product)
-                          setOpen(false)
-                          setSearch("")
-                        }}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm text-ink">
-                            {product.name}
-                          </p>
-                          {product.description && (
-                            <p className="truncate text-xs text-ink-mute">
-                              {product.description}
-                            </p>
-                          )}
-                        </div>
-                        <span className="shrink-0 font-mono text-xs text-ink-mute tabular-nums">
-                          {Number(product.unit_price).toLocaleString()}
-                        </span>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )}
-              </>
+            <CommandEmpty className="py-4 text-center text-sm text-ink-mute">
+              No products found.
+            </CommandEmpty>
+            {products.length > 0 && (
+              <CommandGroup>
+                {products.map((product) => (
+                  <CommandItem
+                    key={product.id}
+                    value={product.id}
+                    onSelect={() => {
+                      onSelect(product)
+                      setOpen(false)
+                      setSearch("")
+                    }}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm text-ink">
+                        {product.name}
+                      </p>
+                      {product.description && (
+                        <p className="truncate text-xs text-ink-mute">
+                          {product.description}
+                        </p>
+                      )}
+                    </div>
+                    <span className="shrink-0 font-mono text-xs text-ink-mute tabular-nums">
+                      {Number(product.unit_price).toLocaleString()}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
             )}
           </CommandList>
         </Command>
