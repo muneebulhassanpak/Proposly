@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase/server.service"
 import { DEFAULT_PRODUCT_UNIT } from "@/lib/constants/product.constants"
-import { QUOTE_STATUS } from "../constants/quote.constants"
+import { QUOTE_STATUS, VERSION_STATUS } from "../constants/quote.constants"
 import type { SaveDraftInput } from "../schemas/save-draft.schema"
 import type {
   SaveDraftResult,
   InitialQuoteData,
   LineItemRow,
+  QuotePreviewData,
 } from "../quotes.types"
 
 export async function searchClients(query: string) {
@@ -321,4 +322,89 @@ export async function getQuoteTemplates() {
     .eq("is_active", true)
     .order("name")
   return data ?? []
+}
+
+export async function getQuotePreview(
+  quoteId: string
+): Promise<QuotePreviewData | null> {
+  const supabase = await createClient()
+
+  const { data: quote } = await supabase
+    .from("quotes")
+    .select(
+      "id, title, status, created_at, expires_at, currency, public_token, client_id, company_id"
+    )
+    .eq("id", quoteId)
+    .single()
+
+  if (!quote) return null
+
+  const { data: version } = await supabase
+    .from("quote_versions")
+    .select(
+      "id, version_number, subtotal, discount_percent, discount_amount, tax_percent, tax_amount, total"
+    )
+    .eq("quote_id", quoteId)
+    .in("status", [VERSION_STATUS.DRAFT, VERSION_STATUS.ACTIVE])
+    .order("version_number", { ascending: false })
+    .limit(1)
+    .single()
+
+  if (!version) return null
+
+  const { data: lineItems } = await supabase
+    .from("quote_line_items")
+    .select("id, name, description, quantity, unit_price, unit, line_total")
+    .eq("version_id", version.id)
+    .order("sort_order")
+
+  const [{ data: company }, { data: client }] = await Promise.all([
+    supabase
+      .from("companies")
+      .select("name, logo_url, address, brand_color")
+      .eq("id", quote.company_id!)
+      .single(),
+    quote.client_id
+      ? supabase
+          .from("clients")
+          .select("name, company_name, email")
+          .eq("id", quote.client_id)
+          .single()
+      : Promise.resolve({ data: null }),
+  ])
+
+  return {
+    quoteId: quote.id,
+    publicToken: quote.public_token ?? "",
+    quoteNumber: `Q-${quote.id.slice(-6).toUpperCase()}`,
+    title: quote.title,
+    status: quote.status ?? QUOTE_STATUS.DRAFT,
+    issuedAt: quote.created_at ?? new Date().toISOString(),
+    expiresAt: quote.expires_at ?? null,
+    currency: quote.currency ?? "USD",
+    clientName: client?.name ?? null,
+    clientCompanyName: client?.company_name ?? null,
+    clientEmail: client?.email ?? null,
+    companyName: company?.name ?? "Your Company",
+    companyLogoUrl: company?.logo_url ?? null,
+    companyAddress: company?.address ?? null,
+    companyBrandColor: company?.brand_color ?? "#1E40D8",
+    versionId: version.id,
+    versionNumber: version.version_number,
+    subtotal: Number(version.subtotal),
+    discountAmount: Number(version.discount_amount),
+    discountPercent: Number(version.discount_percent),
+    taxAmount: Number(version.tax_amount),
+    taxPercent: Number(version.tax_percent),
+    total: Number(version.total),
+    lineItems: (lineItems ?? []).map((li) => ({
+      id: li.id,
+      name: li.name,
+      description: li.description ?? null,
+      quantity: Number(li.quantity),
+      unit_price: Number(li.unit_price),
+      unit: li.unit ?? null,
+      line_total: Number(li.line_total),
+    })),
+  }
 }

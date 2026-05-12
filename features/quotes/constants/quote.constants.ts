@@ -1,9 +1,8 @@
-export const QUOTE_STATUS = {
-  DRAFT: "draft",
-  SENT: "sent",
-  VIEWED: "viewed",
-  ACCEPTED: "accepted",
-  DECLINED: "declined",
-} as const
-
-export type QuoteStatus = (typeof QUOTE_STATUS)[keyof typeof QUOTE_STATUS]
+// Re-exports from lib so intra-feature imports keep working unchanged.
+// The canonical source is lib/constants/quote.constants.ts.
+export {
+  QUOTE_STATUS,
+  VERSION_STATUS,
+  type QuoteStatus,
+  type VersionStatus,
+} from "@/lib/constants/quote.constants"
