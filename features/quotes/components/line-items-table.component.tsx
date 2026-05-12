@@ -60,7 +60,7 @@ function SortableRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="grid grid-cols-[20px_minmax(0,_400px)_1fr_80px_130px_32px] items-center gap-2 border-b border-hairline py-2 last:border-0"
+      className="grid grid-cols-[20px_minmax(0,400px)_1fr_80px_130px_32px] items-center gap-2 border-b border-hairline py-2 last:border-0"
     >
       {/* Drag handle */}
       <button
