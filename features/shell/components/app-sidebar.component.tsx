@@ -52,8 +52,8 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
           <Image
             src="/proposly-mark.svg"
             alt="Proposly"
-            width={28}
-            height={28}
+            width={32}
+            height={32}
             className="shrink-0"
           />
           <span className="overflow-hidden font-display text-lg text-ink italic transition-[max-width,opacity] duration-200 group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0">
