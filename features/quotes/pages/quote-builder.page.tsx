@@ -229,6 +229,7 @@ export function QuoteBuilderPage({
                   onChange={setExpiresAt}
                   placeholder="No expiry"
                   className="w-48"
+                  disablePast
                 />
               </div>
 
