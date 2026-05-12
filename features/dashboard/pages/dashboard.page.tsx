@@ -28,14 +28,28 @@ export function DashboardPage({ userId }: DashboardPageProps) {
     summary,
     isSummaryLoading,
     quotes,
+    pageCount,
     isLoading,
     search,
     setSearch,
     statusFilter,
     setStatusFilter,
+    sorting,
+    setSorting,
+    pageIndex,
+    setPageIndex,
+    pageSize,
   } = useDashboardQuotes(userId)
 
-  const { table, columns } = useDashboardTable(quotes)
+  const { table, columns } = useDashboardTable({
+    quotes,
+    pageCount,
+    sorting,
+    onSortingChange: setSorting,
+    pageIndex,
+    pageSize,
+    onPageIndexChange: setPageIndex,
+  })
 
   return (
     <div className="space-y-6">

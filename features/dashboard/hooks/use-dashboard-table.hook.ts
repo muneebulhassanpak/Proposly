@@ -3,27 +3,52 @@
 import { useMemo } from "react"
 import {
   getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
+  type OnChangeFn,
+  type PaginationState,
+  type SortingState,
 } from "@tanstack/react-table"
 
 import { getDashboardColumns } from "../components/dashboard-columns.component"
 import type { DashboardQuote } from "../dashboard.types"
 
-export function useDashboardTable(quotes: DashboardQuote[]) {
+interface UseDashboardTableParams {
+  quotes: DashboardQuote[]
+  pageCount: number
+  sorting: SortingState
+  onSortingChange: OnChangeFn<SortingState>
+  pageIndex: number
+  pageSize: number
+  onPageIndexChange: (index: number) => void
+}
+
+export function useDashboardTable({
+  quotes,
+  pageCount,
+  sorting,
+  onSortingChange,
+  pageIndex,
+  pageSize,
+  onPageIndexChange,
+}: UseDashboardTableParams) {
   const columns = useMemo(() => getDashboardColumns(), [])
+
+  const pagination: PaginationState = { pageIndex, pageSize }
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: quotes,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      sorting: [{ id: "updatedAt", desc: true }],
-      pagination: { pageSize: 20 },
+    manualSorting: true,
+    manualPagination: true,
+    manualFiltering: true,
+    pageCount,
+    state: { sorting, pagination },
+    onSortingChange,
+    onPaginationChange: (updater) => {
+      const next = typeof updater === "function" ? updater(pagination) : updater
+      onPageIndexChange(next.pageIndex)
     },
   })
 
