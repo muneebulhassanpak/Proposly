@@ -6,6 +6,7 @@ export const ROUTES = {
   QUOTES: "/quotes",
   NEW_QUOTE: "/quotes/new",
   QUOTE: (id: string) => `/quotes/${id}`,
+  QUOTE_PREVIEW: (id: string) => `/quotes/${id}/preview`,
   TEMPLATES: "/templates",
   ADMIN_SETTINGS: "/admin/settings",
   ADMIN_CATALOG: "/admin/catalog",

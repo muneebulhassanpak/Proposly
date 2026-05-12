@@ -48,3 +48,43 @@ export type InitialQuoteData = {
 export type SaveDraftResult =
   | { success: true; quoteId: string; versionId: string }
   | { success: false; error: string }
+
+export type QuotePreviewLineItem = {
+  id: string
+  name: string
+  description: string | null
+  quantity: number
+  unit_price: number
+  unit: string | null
+  line_total: number
+}
+
+export type QuotePreviewData = {
+  quoteId: string
+  publicToken: string
+  quoteNumber: string
+  title: string
+  status: string
+  issuedAt: string
+  expiresAt: string | null
+  currency: string
+  // Client
+  clientName: string | null
+  clientCompanyName: string | null
+  clientEmail: string | null
+  // Company
+  companyName: string
+  companyLogoUrl: string | null
+  companyAddress: string | null
+  companyBrandColor: string
+  // Version
+  versionId: string
+  versionNumber: number
+  subtotal: number
+  discountAmount: number
+  discountPercent: number
+  taxAmount: number
+  taxPercent: number
+  total: number
+  lineItems: QuotePreviewLineItem[]
+}

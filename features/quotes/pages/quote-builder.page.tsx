@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Controller } from "react-hook-form"
 import { AlertTriangle, Eye, Plus } from "lucide-react"
 
@@ -13,6 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { useQuoteBuilder } from "../hooks/use-quote-builder.hook"
 import { ClientCombobox } from "../components/client-combobox.component"
 import { LineItemsTable } from "../components/line-items-table.component"
@@ -85,17 +87,26 @@ export function QuoteBuilderPage({
             hasItems={lineItems.length > 0}
             onLoad={(templateItems) => setValue("line_items", templateItems)}
           />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span>
-                <Button variant="outline" size="sm" disabled>
-                  <Eye size={14} strokeWidth={1.5} />
-                  Preview
-                </Button>
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>Save first to preview</TooltipContent>
-          </Tooltip>
+          {quoteId ? (
+            <Button variant="outline" size="sm" asChild>
+              <Link href={ROUTES.QUOTE_PREVIEW(quoteId)}>
+                <Eye size={14} strokeWidth={1.5} />
+                Preview
+              </Link>
+            </Button>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button variant="outline" size="sm" disabled>
+                    <Eye size={14} strokeWidth={1.5} />
+                    Preview
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Save first to preview</TooltipContent>
+            </Tooltip>
+          )}
           <Button type="submit" size="sm" loading={isSaving}>
             Save as Draft
           </Button>
