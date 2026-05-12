@@ -1,16 +1,14 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  type ColumnDef,
-  type SortingState,
 } from "@tanstack/react-table"
-import { ArrowDown, ArrowUp, ChevronsUpDown, Pencil, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
 import { Button } from "@/components/ui/button"
@@ -23,7 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Switch } from "@/components/ui/switch"
 import {
   Table,
   TableBody,
@@ -32,162 +29,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { PriceHistoryDialog } from "../components/price-history-dialog.component"
+import { getCatalogColumns } from "../components/catalog-columns.component"
 import { ProductDialog } from "../components/product-dialog.component"
-import { useProducts, useToggleProductActive } from "../hooks/use-products.hook"
-import type { Product } from "../products.types"
-
-type StatusFilter = "all" | "active" | "inactive"
-
-function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
-  if (direction === "asc")
-    return <ArrowUp size={12} strokeWidth={1.5} className="shrink-0" />
-  if (direction === "desc")
-    return <ArrowDown size={12} strokeWidth={1.5} className="shrink-0" />
-  return (
-    <ChevronsUpDown
-      size={12}
-      strokeWidth={1.5}
-      className="shrink-0 text-ink-faint"
-    />
-  )
-}
+import {
+  useCatalogFilters,
+  useToggleProductActive,
+} from "../hooks/use-products.hook"
 
 export function CatalogPage() {
-  const { data: products, isLoading } = useProducts()
   const toggleActive = useToggleProductActive()
+  const {
+    search,
+    setSearch,
+    statusFilter,
+    setStatusFilter,
+    sorting,
+    setSorting,
+    sheetOpen,
+    setSheetOpen,
+    editProduct,
+    setEditProduct,
+    filtered,
+    isLoading,
+    totalCount,
+  } = useCatalogFilters()
 
-  const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const [editProduct, setEditProduct] = useState<Product | null>(null)
-
-  const filtered = useMemo(() => {
-    if (!products) return []
-    return products.filter((p) => {
-      const matchSearch =
-        !search ||
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        (p.category ?? "").toLowerCase().includes(search.toLowerCase())
-      const matchStatus =
-        statusFilter === "all" ||
-        (statusFilter === "active" && p.is_active) ||
-        (statusFilter === "inactive" && !p.is_active)
-      return matchSearch && matchStatus
-    })
-  }, [products, search, statusFilter])
-
-  const columns = useMemo<ColumnDef<Product>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        header: ({ column }) => (
-          <button
-            className="flex items-center gap-1 hover:text-ink"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Name
-            <SortIcon direction={column.getIsSorted()} />
-          </button>
-        ),
-        cell: ({ row }) => (
-          <span className="font-medium text-ink">{row.original.name}</span>
-        ),
-      },
-      {
-        accessorKey: "category",
-        header: ({ column }) => (
-          <button
-            className="flex items-center gap-1 hover:text-ink"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Category
-            <SortIcon direction={column.getIsSorted()} />
-          </button>
-        ),
-        cell: ({ row }) => (
-          <span className="text-ink-mute">{row.original.category ?? "—"}</span>
-        ),
-      },
-      {
-        accessorKey: "unit",
-        header: "Unit",
-        cell: ({ row }) => (
-          <span className="text-ink-mute capitalize">
-            {row.original.unit ?? "—"}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "unit_price",
-        header: ({ column }) => (
-          <button
-            className="flex w-full items-center justify-end gap-1 hover:text-ink"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Unit price
-            <SortIcon direction={column.getIsSorted()} />
-          </button>
-        ),
-        cell: ({ row }) => (
-          <span className="block text-right font-mono text-ink tabular-nums">
-            {row.original.unit_price.toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "cost_price",
-        header: () => <span className="block text-right">Cost price</span>,
-        cell: ({ row }) => (
-          <span className="block text-right font-mono text-ink-mute tabular-nums">
-            {row.original.cost_price?.toLocaleString() ?? "—"}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "is_active",
-        header: "Status",
-        cell: ({ row }) => {
-          const product = row.original
-          return (
-            <Switch
-              size="sm"
-              checked={product.is_active ?? false}
-              onCheckedChange={(v) =>
-                toggleActive.mutate({ productId: product.id, isActive: v })
-              }
-            />
-          )
+  const columns = useMemo(
+    () =>
+      getCatalogColumns({
+        onEdit: (product) => {
+          setEditProduct(product)
+          setSheetOpen(true)
         },
-      },
-      {
-        id: "actions",
-        cell: ({ row }) => {
-          const product = row.original
-          return (
-            <div className="flex items-center justify-end gap-1">
-              <PriceHistoryDialog
-                productId={product.id}
-                productName={product.name}
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={() => {
-                  setEditProduct(product)
-                  setSheetOpen(true)
-                }}
-              >
-                <Pencil size={14} strokeWidth={1.5} />
-              </Button>
-            </div>
-          )
-        },
-      },
-    ],
-    [toggleActive]
+        onToggleActive: (productId, isActive) =>
+          toggleActive.mutate({ productId, isActive }),
+      }),
+    [toggleActive, setEditProduct, setSheetOpen]
   )
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -223,7 +100,6 @@ export function CatalogPage() {
         </Button>
       </div>
 
-      {/* Filters */}
       <div className="mb-4 flex items-center gap-3">
         <Input
           placeholder="Search by name or category…"
@@ -233,7 +109,9 @@ export function CatalogPage() {
         />
         <Select
           value={statusFilter}
-          onValueChange={(v) => setStatusFilter(v as StatusFilter)}
+          onValueChange={(v) =>
+            setStatusFilter(v as "all" | "active" | "inactive")
+          }
         >
           <SelectTrigger className="w-36">
             <SelectValue />
@@ -285,7 +163,7 @@ export function CatalogPage() {
                   colSpan={columns.length}
                   className="py-8 text-center text-sm text-ink-mute"
                 >
-                  {products?.length === 0
+                  {totalCount === 0
                     ? "No products yet. Add your first service."
                     : "No products match your filters."}
                 </TableCell>

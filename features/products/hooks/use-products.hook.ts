@@ -1,8 +1,11 @@
 "use client"
 
+import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import type { SortingState } from "@tanstack/react-table"
 
+import type { Product } from "../products.types"
 import {
   createProductAction,
   toggleProductActiveAction,
@@ -10,6 +13,49 @@ import {
 } from "../actions/product.action"
 import { getPriceHistory, getProducts } from "../services/product.service"
 import type { ProductFormData } from "../schemas/product.schema"
+
+type StatusFilter = "all" | "active" | "inactive"
+
+export function useCatalogFilters() {
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [editProduct, setEditProduct] = useState<Product | null>(null)
+
+  const { data: products, isLoading } = useProducts()
+
+  const filtered = useMemo(() => {
+    if (!products) return []
+    return products.filter((p) => {
+      const matchSearch =
+        !search ||
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        (p.category ?? "").toLowerCase().includes(search.toLowerCase())
+      const matchStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && p.is_active) ||
+        (statusFilter === "inactive" && !p.is_active)
+      return matchSearch && matchStatus
+    })
+  }, [products, search, statusFilter])
+
+  return {
+    search,
+    setSearch,
+    statusFilter,
+    setStatusFilter,
+    sorting,
+    setSorting,
+    sheetOpen,
+    setSheetOpen,
+    editProduct,
+    setEditProduct,
+    filtered,
+    isLoading,
+    totalCount: products?.length ?? 0,
+  }
+}
 
 const PRODUCTS_KEY = ["products"] as const
 
