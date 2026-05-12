@@ -21,11 +21,10 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { PRODUCT_UNITS } from "../constants/product.constants"
 import { useCreateProduct, useUpdateProduct } from "../hooks/use-products.hook"
 import type { ProductFormData } from "../schemas/product.schema"
 import type { Product } from "../products.types"
-
-const UNITS = ["hour", "page", "project", "item", "word", "custom"] as const
 
 interface ProductDialogProps {
   open: boolean
@@ -139,7 +138,7 @@ export function ProductDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {UNITS.map((u) => (
+                  {PRODUCT_UNITS.map((u) => (
                     <SelectItem key={u} value={u}>
                       {u.charAt(0).toUpperCase() + u.slice(1)}
                     </SelectItem>
