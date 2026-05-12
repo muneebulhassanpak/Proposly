@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 
 import type { UserRole } from "@/lib/auth.utils"
+import { ROUTES } from "@/lib/constants/routes.constants"
 
 export type NavItem = {
   label: string
@@ -20,19 +21,23 @@ export type NavItem = {
 
 export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
   rep: [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Quotes", href: "/quotes", icon: FileText },
-    { label: "Templates", href: "/templates", icon: LayoutTemplate },
+    { label: "Dashboard", href: ROUTES.DASHBOARD, icon: LayoutDashboard },
+    { label: "Quotes", href: ROUTES.QUOTES, icon: FileText },
+    { label: "Templates", href: ROUTES.TEMPLATES, icon: LayoutTemplate },
   ],
   manager: [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Approvals", href: "/manager/approvals", icon: CheckSquare },
-    { label: "Analytics", href: "/manager/analytics", icon: BarChart2 },
-    { label: "Quotes", href: "/quotes", icon: FileText },
+    { label: "Dashboard", href: ROUTES.DASHBOARD, icon: LayoutDashboard },
+    { label: "Approvals", href: ROUTES.MANAGER_APPROVALS, icon: CheckSquare },
+    { label: "Analytics", href: ROUTES.MANAGER_ANALYTICS, icon: BarChart2 },
+    { label: "Quotes", href: ROUTES.QUOTES, icon: FileText },
   ],
   admin: [
-    { label: "Product Catalog", href: "/admin/catalog", icon: Package },
-    { label: "Discount Rules", href: "/admin/discount-rules", icon: Percent },
-    { label: "Users", href: "/admin/users", icon: Users },
+    { label: "Product Catalog", href: ROUTES.ADMIN_CATALOG, icon: Package },
+    {
+      label: "Discount Rules",
+      href: ROUTES.ADMIN_DISCOUNT_RULES,
+      icon: Percent,
+    },
+    { label: "Users", href: ROUTES.ADMIN_USERS, icon: Users },
   ],
 }
