@@ -3,36 +3,40 @@
 import { requireRole } from "@/lib/auth.utils"
 import { createAdminClient } from "@/lib/supabase/admin.service"
 import { createClient } from "@/lib/supabase/server.service"
-import { editRoleSchema, inviteUserSchema } from "../schemas/user.schema"
+import { createUserSchema, editRoleSchema } from "../schemas/user.schema"
 import type { UserRole } from "../settings.types"
 
 export type UserActionResult = { success: boolean; error?: string }
 
-export async function inviteUserAction(
+export async function createUserAction(
+  name: string,
   email: string,
+  password: string,
   role: "manager" | "rep"
 ): Promise<UserActionResult> {
   const profile = await requireRole("admin")
   if (!profile.company_id)
     return { success: false, error: "No company associated" }
 
-  const parsed = inviteUserSchema.safeParse({ email, role })
+  const parsed = createUserSchema.safeParse({ name, email, password, role })
   if (!parsed.success)
     return { success: false, error: parsed.error.issues[0].message }
 
   const admin = createAdminClient()
 
-  const { data, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
-    parsed.data.email,
-    { data: { role: parsed.data.role, company_id: profile.company_id } }
-  )
+  const { data, error: createError } = await admin.auth.admin.createUser({
+    email: parsed.data.email,
+    password: parsed.data.password,
+    email_confirm: true,
+    user_metadata: { role: parsed.data.role, company_id: profile.company_id },
+  })
 
-  if (inviteError) return { success: false, error: inviteError.message }
+  if (createError) return { success: false, error: createError.message }
 
-  // Create profile row for the invited user
   const { error: profileError } = await admin.from("profiles").upsert({
     id: data.user.id,
     email: parsed.data.email,
+    full_name: parsed.data.name,
     role: parsed.data.role,
     company_id: profile.company_id,
   })

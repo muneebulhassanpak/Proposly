@@ -1,6 +1,8 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 
 import { createClient } from "@/lib/supabase/browser.service"
@@ -19,6 +21,7 @@ import {
   ChevronsUpDown,
   MoreHorizontal,
   Plus,
+  Shuffle,
   UserCheck,
   UserX,
 } from "lucide-react"
@@ -60,11 +63,15 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  useInviteUser,
+  useCreateUser,
   useToggleUserActive,
   useUpdateUserRole,
   useUsers,
 } from "../hooks/use-users.hook"
+import {
+  createUserSchema,
+  type CreateUserFormData,
+} from "../schemas/user.schema"
 import type { UserProfile, UserRole } from "../settings.types"
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -93,74 +100,141 @@ function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
   )
 }
 
-function InviteDialog() {
+function CreateUserDialog() {
   const [open, setOpen] = useState(false)
-  const [email, setEmail] = useState("")
-  const [role, setRole] = useState<"manager" | "rep">("rep")
-  const invite = useInviteUser()
+  const create = useCreateUser()
 
-  function handleSubmit() {
-    invite.mutate(
-      { email, role },
-      {
-        onSuccess: (result) => {
-          if (result.success) {
-            setOpen(false)
-            setEmail("")
-          }
-        },
-      }
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<CreateUserFormData>({
+    resolver: zodResolver(createUserSchema),
+    defaultValues: { name: "", email: "", password: "", role: "rep" },
+    mode: "onChange",
+  })
+
+  function onSubmit(data: CreateUserFormData) {
+    create.mutate(data, {
+      onSuccess: (result) => {
+        if (result.success) {
+          setOpen(false)
+          reset()
+        }
+      },
+    })
+  }
+
+  function generatePassword() {
+    const chars =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
+    const arr = new Uint8Array(16)
+    crypto.getRandomValues(arr)
+    setValue(
+      "password",
+      Array.from(arr)
+        .map((b) => chars[b % chars.length])
+        .join(""),
+      { shouldValidate: true }
     )
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o)
+        if (!o) reset()
+      }}
+    >
       <DialogTrigger asChild>
         <Button size="sm">
           <Plus size={14} strokeWidth={1.5} />
-          Invite user
+          Add user
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Invite user</DialogTitle>
+          <DialogTitle>Add user</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="invite-email">Email address</Label>
-            <Input
-              id="invite-email"
-              type="email"
-              placeholder="colleague@agency.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="create-name">Full name</Label>
+              <Input
+                id="create-name"
+                placeholder="Jane Smith"
+                {...register("name")}
+              />
+              {errors.name && (
+                <p className="text-xs text-crimson">{errors.name.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="create-email">Email address</Label>
+              <Input
+                id="create-email"
+                type="email"
+                placeholder="jane@agency.com"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-xs text-crimson">{errors.email.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="create-password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="create-password"
+                  type="text"
+                  placeholder="Min. 8 characters"
+                  className="pr-9 font-mono text-xs"
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  title="Generate strong password"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 text-ink-mute transition-colors hover:text-primary"
+                  onClick={generatePassword}
+                >
+                  <Shuffle size={14} strokeWidth={1.5} />
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-xs text-crimson">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label>Role</Label>
+              <Controller
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rep">Rep</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
           </div>
-          <div className="space-y-1.5">
-            <Label>Role</Label>
-            <Select
-              value={role}
-              onValueChange={(v) => setRole(v as "manager" | "rep")}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rep">Rep</SelectItem>
-                <SelectItem value="manager">Manager</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <DialogFooter showCloseButton>
-          <Button
-            onClick={handleSubmit}
-            loading={invite.isPending}
-            disabled={!email}
-          >
-            Send invite
-          </Button>
-        </DialogFooter>
+          <DialogFooter showCloseButton>
+            <Button type="submit" loading={create.isPending}>
+              Create user
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )
@@ -370,7 +444,7 @@ export function UsersPage() {
             Manage team members and their roles.
           </p>
         </div>
-        <InviteDialog />
+        <CreateUserDialog />
       </div>
 
       <div className="mb-4 flex items-center gap-3">

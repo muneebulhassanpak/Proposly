@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Settings } from "lucide-react"
+import { Plus, Settings } from "lucide-react"
 
 import {
   Sidebar,
@@ -11,6 +11,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -63,8 +64,25 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
+        {/* New Proposal CTA */}
+        <SidebarGroup className="px-3 pt-3 pb-1">
+          <SidebarGroupContent>
+            <SidebarMenuButton
+              asChild
+              tooltip="New Proposal"
+              className="h-8 w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 data-[active=true]:bg-primary/90"
+            >
+              <Link href="/quotes/new">
+                <Plus size={14} strokeWidth={1.5} />
+                <span>New proposal</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         {/* Main nav */}
         <SidebarGroup>
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map(({ label, href, icon: Icon }) => {

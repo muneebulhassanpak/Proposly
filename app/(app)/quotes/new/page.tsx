@@ -1,8 +1,15 @@
-export default function NewQuotePage() {
+import { getCompanyQuoteSettings } from "@/features/quotes/services/quote.service"
+import { QuoteBuilderPage } from "@/features/quotes/pages/quote-builder.page"
+
+export default async function NewQuotePage() {
+  const { defaultTaxPercent, discountThreshold, currency } =
+    await getCompanyQuoteSettings()
+
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-ink">New Quote</h1>
-      <p className="mt-1 text-sm text-ink-mute">Coming in Sprint 3.</p>
-    </div>
+    <QuoteBuilderPage
+      defaultTaxPercent={defaultTaxPercent}
+      discountThreshold={discountThreshold}
+      currency={currency}
+    />
   )
 }
