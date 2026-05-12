@@ -26,13 +26,13 @@ export function SummaryCards({ summary, isLoading }: SummaryCardsProps) {
           <p className="text-xs font-medium tracking-wide text-ink-mute uppercase">
             {label}
           </p>
-          <p className="mt-2 font-mono text-2xl font-semibold text-ink tabular-nums">
+          <div className="mt-2 font-mono text-2xl font-semibold text-ink tabular-nums">
             {isLoading ? (
               <Skeleton className="mt-1 h-7 w-12" />
             ) : (
               (summary?.[key] ?? 0)
             )}
-          </p>
+          </div>
         </div>
       ))}
     </div>
