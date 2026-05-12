@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache"
 
 import { requireRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { discountRuleSchema } from "../schemas/discount-rules.schema"
 import { upsertDiscountRule } from "../services/discount-rules.service"
 
@@ -15,7 +17,7 @@ export async function upsertDiscountRuleAction(
   _prev: DiscountRuleActionState,
   formData: FormData
 ): Promise<DiscountRuleActionState> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { error: "No company associated with account" }
 
@@ -33,6 +35,6 @@ export async function upsertDiscountRuleAction(
 
   if (error) return { error }
 
-  revalidatePath("/admin/discount-rules")
+  revalidatePath(ROUTES.ADMIN_DISCOUNT_RULES)
   return { success: true }
 }

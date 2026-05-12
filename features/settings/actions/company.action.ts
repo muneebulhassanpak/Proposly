@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache"
 
 import { requireRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { companySchema } from "../schemas/company.schema"
 import { updateCompany, uploadCompanyLogo } from "../services/company.service"
 
@@ -15,7 +17,7 @@ export async function updateCompanyAction(
   _prev: CompanyActionState,
   formData: FormData
 ): Promise<CompanyActionState> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { error: "No company associated with account" }
 
@@ -54,6 +56,6 @@ export async function updateCompanyAction(
 
   if (error) return { error }
 
-  revalidatePath("/admin/settings")
+  revalidatePath(ROUTES.ADMIN_SETTINGS)
   return { success: true }
 }

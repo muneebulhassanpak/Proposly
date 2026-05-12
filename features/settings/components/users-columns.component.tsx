@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { SortIcon } from "@/components/sort-icon.component"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { EditRoleDialog } from "./edit-role-dialog.component"
 import { RoleBadge } from "./role-badge.component"
-import type { UserProfile, UserRole } from "../settings.types"
+import type { UserProfile } from "../settings.types"
 
 interface UsersColumnParams {
   currentUserId: string | null | undefined

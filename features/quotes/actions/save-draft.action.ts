@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { saveDraftSchema } from "../schemas/save-draft.schema"
 import { saveDraft } from "../services/quote.service"
 
@@ -15,8 +16,8 @@ export async function saveDraftAction(raw: unknown) {
 
   const result = await saveDraft(parsed.data)
   if (result.success) {
-    revalidatePath("/quotes")
-    revalidatePath(`/quotes/${result.quoteId}`)
+    revalidatePath(ROUTES.QUOTES)
+    revalidatePath(ROUTES.QUOTE(result.quoteId))
   }
   return result
 }

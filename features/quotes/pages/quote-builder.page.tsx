@@ -58,7 +58,6 @@ export function QuoteBuilderPage({
     initial,
     defaultTaxPercent,
     discountThreshold,
-    currency,
   })
 
   const {

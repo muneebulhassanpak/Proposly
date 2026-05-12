@@ -24,7 +24,6 @@ interface UseQuoteBuilderParams {
   initial?: InitialQuoteData
   defaultTaxPercent: number
   discountThreshold: number | null
-  currency: string
 }
 
 export function useQuoteBuilder({
@@ -32,7 +31,6 @@ export function useQuoteBuilder({
   initial,
   defaultTaxPercent,
   discountThreshold,
-  currency,
 }: UseQuoteBuilderParams) {
   const router = useRouter()
 

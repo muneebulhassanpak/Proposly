@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server.service"
+import { QUOTE_STATUS } from "../constants/quote.constants"
 import type { SaveDraftInput } from "../schemas/save-draft.schema"
 import type {
   SaveDraftResult,
@@ -102,7 +103,7 @@ export async function saveDraft(
       .from("quote_versions")
       .select("id")
       .eq("quote_id", input.quote_id)
-      .eq("status", "draft")
+      .eq("status", QUOTE_STATUS.DRAFT)
       .order("version_number", { ascending: false })
       .limit(1)
       .single()
@@ -153,7 +154,7 @@ export async function saveDraft(
       client_id: input.client_id,
       created_by: user.id,
       title: input.title,
-      status: "draft",
+      status: QUOTE_STATUS.DRAFT,
       notes: input.notes || null,
       expires_at: input.expires_at,
     })
@@ -167,7 +168,7 @@ export async function saveDraft(
     .insert({
       quote_id: quote.id,
       version_number: 1,
-      status: "draft",
+      status: QUOTE_STATUS.DRAFT,
       subtotal,
       discount_percent: input.discount_percent,
       discount_amount: discountAmount,
@@ -215,13 +216,13 @@ export async function getQuoteDraft(
     .eq("id", quoteId)
     .single()
 
-  if (!quote || quote.status !== "draft") return null
+  if (!quote || quote.status !== QUOTE_STATUS.DRAFT) return null
 
   const { data: version } = await supabase
     .from("quote_versions")
     .select("id, discount_percent, tax_percent")
     .eq("quote_id", quoteId)
-    .eq("status", "draft")
+    .eq("status", QUOTE_STATUS.DRAFT)
     .order("version_number", { ascending: false })
     .limit(1)
     .single()

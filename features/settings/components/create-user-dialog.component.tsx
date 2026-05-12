@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { useCreateUserDialog } from "../hooks/use-create-user-dialog.hook"
 
 export function CreateUserDialog() {
@@ -109,8 +110,10 @@ export function CreateUserDialog() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="rep">Rep</SelectItem>
-                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value={USER_ROLES.REP}>Rep</SelectItem>
+                      <SelectItem value={USER_ROLES.MANAGER}>
+                        Manager
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 )}

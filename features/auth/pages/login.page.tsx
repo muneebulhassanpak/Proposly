@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { useLogin } from "../hooks/use-login.hook"
 
 export function LoginPage() {
@@ -49,7 +50,7 @@ export function LoginPage() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <Link
-                  href="/forgot-password"
+                  href={ROUTES.FORGOT_PASSWORD}
                   className="text-xs text-ink-mute transition-colors hover:text-ink"
                 >
                   Forgot password?

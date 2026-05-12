@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { useCreateUser } from "./use-users.hook"
 import {
   createUserSchema,
@@ -23,7 +24,7 @@ export function useCreateUserDialog() {
     formState: { errors },
   } = useForm<CreateUserFormData>({
     resolver: zodResolver(createUserSchema),
-    defaultValues: { name: "", email: "", password: "", role: "rep" },
+    defaultValues: { name: "", email: "", password: "", role: USER_ROLES.REP },
     mode: "onChange",
   })
 

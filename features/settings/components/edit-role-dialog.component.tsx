@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { useEditRoleDialog } from "../hooks/use-edit-role-dialog.hook"
 import type { UserProfile, UserRole } from "../settings.types"
 
@@ -42,9 +43,9 @@ export function EditRoleDialog({ user, onClose }: EditRoleDialogProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="rep">Rep</SelectItem>
-              <SelectItem value="manager">Manager</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value={USER_ROLES.REP}>Rep</SelectItem>
+              <SelectItem value={USER_ROLES.MANAGER}>Manager</SelectItem>
+              <SelectItem value={USER_ROLES.ADMIN}>Admin</SelectItem>
             </SelectContent>
           </Select>
         </div>

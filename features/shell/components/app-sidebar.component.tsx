@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar"
 import type { UserRole } from "@/lib/auth.utils"
 import { ROUTES } from "@/lib/constants/routes.constants"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { NAV_ITEMS } from "../constants/nav-items.constants"
 
 interface AppSidebarProps {
@@ -90,7 +91,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
               {items.map(({ label, href, icon: Icon }) => {
                 const isActive =
                   pathname === href ||
-                  (href !== "/dashboard" && pathname.startsWith(href + "/"))
+                  (href !== ROUTES.DASHBOARD && pathname.startsWith(href + "/"))
                 return (
                   <SidebarMenuItem key={href}>
                     <SidebarMenuButton
@@ -111,7 +112,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
         </SidebarGroup>
 
         {/* Settings — pushed to bottom of content */}
-        {profile.role === "admin" && (
+        {profile.role === USER_ROLES.ADMIN && (
           <SidebarGroup className="mt-auto">
             <SidebarGroupContent>
               <SidebarMenu>

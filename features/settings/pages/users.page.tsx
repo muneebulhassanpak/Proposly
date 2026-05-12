@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table"
 
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -28,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { CreateUserDialog } from "../components/create-user-dialog.component"
 import { getUsersColumns } from "../components/users-columns.component"
 import { useToggleUserActive, useUserFilters } from "../hooks/use-users.hook"
@@ -102,9 +102,9 @@ export function UsersPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All roles</SelectItem>
-            <SelectItem value="admin">Admin</SelectItem>
-            <SelectItem value="manager">Manager</SelectItem>
-            <SelectItem value="rep">Rep</SelectItem>
+            <SelectItem value={USER_ROLES.ADMIN}>Admin</SelectItem>
+            <SelectItem value={USER_ROLES.MANAGER}>Manager</SelectItem>
+            <SelectItem value={USER_ROLES.REP}>Rep</SelectItem>
           </SelectContent>
         </Select>
       </div>

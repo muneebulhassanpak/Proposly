@@ -1,6 +1,7 @@
 "use server"
 
 import { requireRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { productSchema } from "../schemas/product.schema"
 import type { ProductFormData } from "../schemas/product.schema"
 import {
@@ -16,7 +17,7 @@ export type ProductActionResult = { success: boolean; error?: string }
 export async function createProductAction(
   data: ProductFormData
 ): Promise<ProductActionResult> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { success: false, error: "No company associated" }
 
@@ -33,7 +34,7 @@ export async function updateProductAction(
   productId: string,
   data: ProductFormData
 ): Promise<ProductActionResult> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { success: false, error: "No company associated" }
 
@@ -67,7 +68,7 @@ export async function toggleProductActiveAction(
   productId: string,
   isActive: boolean
 ): Promise<ProductActionResult> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { success: false, error: "No company associated" }
 

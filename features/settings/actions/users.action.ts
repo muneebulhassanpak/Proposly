@@ -1,6 +1,7 @@
 "use server"
 
 import { requireRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { createAdminClient } from "@/lib/supabase/admin.service"
 import { createUserSchema, editRoleSchema } from "../schemas/user.schema"
 import type { CreateUserFormData } from "../schemas/user.schema"
@@ -19,7 +20,7 @@ export async function createUserAction(
   password: string,
   role: CreateUserFormData["role"]
 ): Promise<UserActionResult> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { success: false, error: "No company associated" }
 
@@ -53,7 +54,7 @@ export async function updateUserRoleAction(
   userId: string,
   role: UserRole
 ): Promise<UserActionResult> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { success: false, error: "No company associated" }
 
@@ -75,7 +76,7 @@ export async function toggleUserActiveAction(
   userId: string,
   isActive: boolean
 ): Promise<UserActionResult> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { success: false, error: "No company associated" }
 

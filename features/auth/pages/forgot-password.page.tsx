@@ -3,6 +3,7 @@
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useForgotPassword } from "../hooks/use-forgot-password.hook"
@@ -59,7 +60,10 @@ export function ForgotPasswordPage() {
         </div>
 
         <p className="mt-4 text-center text-xs text-ink-mute">
-          <Link href="/login" className="transition-colors hover:text-ink">
+          <Link
+            href={ROUTES.LOGIN}
+            className="transition-colors hover:text-ink"
+          >
             Back to sign in
           </Link>
         </p>
