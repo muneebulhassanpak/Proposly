@@ -47,7 +47,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex h-14 flex-row items-center border-b border-hairline px-4 py-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+      <SidebarHeader className="flex h-14 flex-row items-center border-b border-hairline px-4 py-0 group-data-[collapsible=icon]:ml-2.5 group-data-[collapsible=icon]:justify-center">
         <div className="flex items-center gap-2.5">
           <Image
             src="/proposly-mark.svg"
