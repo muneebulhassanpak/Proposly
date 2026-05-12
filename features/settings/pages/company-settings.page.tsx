@@ -14,10 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { SUPPORTED_CURRENCIES } from "@/lib/constants/currencies.constants"
 import { updateCompanyAction } from "../actions/company.action"
 import type { Company } from "../settings.types"
-
-const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "SGD", "AED", "INR"]
 
 interface CompanySettingsPageProps {
   company: Company | null
@@ -220,7 +219,7 @@ export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {CURRENCIES.map((c) => (
+                    {SUPPORTED_CURRENCIES.map((c) => (
                       <SelectItem key={c} value={c}>
                         {c}
                       </SelectItem>
