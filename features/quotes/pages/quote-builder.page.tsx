@@ -142,39 +142,41 @@ export function QuoteBuilderPage({
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <Label>Client</Label>
-                <Controller
-                  control={control}
-                  name="client_id"
-                  render={({ field }) => (
-                    <ClientCombobox
-                      value={field.value}
-                      selectedClient={selectedClient}
-                      onChange={(id, client) => {
-                        field.onChange(id)
-                        setSelectedClient(client)
-                      }}
-                    />
-                  )}
-                />
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Client</Label>
+                  <Controller
+                    control={control}
+                    name="client_id"
+                    render={({ field }) => (
+                      <ClientCombobox
+                        value={field.value}
+                        selectedClient={selectedClient}
+                        onChange={(id, client) => {
+                          field.onChange(id)
+                          setSelectedClient(client)
+                        }}
+                      />
+                    )}
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label>Expiry date</Label>
-                <Controller
-                  control={control}
-                  name="expires_at"
-                  render={({ field }) => (
-                    <DatePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="No expiry"
-                      className="w-48"
-                      disablePast
-                    />
-                  )}
-                />
+                <div className="space-y-1.5">
+                  <Label>Expiry date</Label>
+                  <Controller
+                    control={control}
+                    name="expires_at"
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="No expiry"
+                        className="w-full"
+                        disablePast
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
