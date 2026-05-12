@@ -214,6 +214,18 @@ export function UsersPage() {
   const toggleActive = useToggleUserActive()
   const [editUser, setEditUser] = useState<UserProfile | null>(null)
   const [sorting, setSorting] = useState<SortingState>([])
+  const [search, setSearch] = useState("")
+
+  const filtered = useMemo(() => {
+    if (!users) return []
+    if (!search) return users
+    const q = search.toLowerCase()
+    return users.filter(
+      (u) =>
+        (u.full_name ?? "").toLowerCase().includes(q) ||
+        (u.email ?? "").toLowerCase().includes(q)
+    )
+  }, [users, search])
 
   const columns = useMemo<ColumnDef<UserProfile>[]>(
     () => [
@@ -235,15 +247,7 @@ export function UsersPage() {
       },
       {
         accessorKey: "role",
-        header: ({ column }) => (
-          <button
-            className="flex items-center gap-1 hover:text-ink"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Role
-            <SortIcon direction={column.getIsSorted()} />
-          </button>
-        ),
+        header: "Role",
         cell: ({ row }) => <RoleBadge role={row.original.role} />,
       },
       {
@@ -333,7 +337,7 @@ export function UsersPage() {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: users ?? [],
+    data: filtered,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -353,6 +357,15 @@ export function UsersPage() {
           </p>
         </div>
         <InviteDialog />
+      </div>
+
+      <div className="mb-4">
+        <Input
+          placeholder="Search by name or email…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-xs"
+        />
       </div>
 
       <div className="rounded-lg border border-hairline bg-surface">
