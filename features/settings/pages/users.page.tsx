@@ -1,8 +1,26 @@
 "use client"
 
-import { useState } from "react"
-import { MoreHorizontal, Plus, UserCheck, UserX } from "lucide-react"
+import { useMemo, useState } from "react"
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type SortingState,
+} from "@tanstack/react-table"
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronsUpDown,
+  MoreHorizontal,
+  Plus,
+  UserCheck,
+  UserX,
+} from "lucide-react"
 
+import { DataTablePagination } from "@/components/ui/data-table-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -56,6 +74,20 @@ function RoleBadge({ role }: { role: UserRole }) {
   const variant =
     role === "admin" ? "cobalt" : role === "manager" ? "amber" : "slate"
   return <Badge variant={variant}>{ROLE_LABELS[role]}</Badge>
+}
+
+function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
+  if (direction === "asc")
+    return <ArrowUp size={12} strokeWidth={1.5} className="shrink-0" />
+  if (direction === "desc")
+    return <ArrowDown size={12} strokeWidth={1.5} className="shrink-0" />
+  return (
+    <ChevronsUpDown
+      size={12}
+      strokeWidth={1.5}
+      className="shrink-0 text-ink-faint"
+    />
+  )
 }
 
 function InviteDialog() {
@@ -181,6 +213,135 @@ export function UsersPage() {
   const { data: users, isLoading } = useUsers()
   const toggleActive = useToggleUserActive()
   const [editUser, setEditUser] = useState<UserProfile | null>(null)
+  const [sorting, setSorting] = useState<SortingState>([])
+
+  const columns = useMemo<ColumnDef<UserProfile>[]>(
+    () => [
+      {
+        accessorKey: "full_name",
+        header: "Name",
+        cell: ({ row }) => (
+          <span className="font-medium text-ink">
+            {row.original.full_name ?? "—"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ row }) => (
+          <span className="text-ink-mute">{row.original.email}</span>
+        ),
+      },
+      {
+        accessorKey: "role",
+        header: ({ column }) => (
+          <button
+            className="flex items-center gap-1 hover:text-ink"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Role
+            <SortIcon direction={column.getIsSorted()} />
+          </button>
+        ),
+        cell: ({ row }) => <RoleBadge role={row.original.role} />,
+      },
+      {
+        accessorKey: "is_active",
+        header: "Status",
+        cell: ({ row }) => (
+          <Badge variant={row.original.is_active ? "active" : "inactive"}>
+            {row.original.is_active ? "Active" : "Inactive"}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "created_at",
+        header: ({ column }) => (
+          <button
+            className="flex items-center gap-1 hover:text-ink"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Joined
+            <SortIcon direction={column.getIsSorted()} />
+          </button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-ink-mute">
+            {row.original.created_at
+              ? new Date(row.original.created_at).toLocaleDateString()
+              : "—"}
+          </span>
+        ),
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => {
+          const user = row.original
+          return (
+            <Dialog
+              open={editUser?.id === user.id}
+              onOpenChange={(o) => !o && setEditUser(null)}
+            >
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <MoreHorizontal size={14} strokeWidth={1.5} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setEditUser(user)}>
+                    Change role
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() =>
+                      toggleActive.mutate({
+                        userId: user.id,
+                        isActive: !user.is_active,
+                      })
+                    }
+                    className={user.is_active ? "text-crimson" : undefined}
+                  >
+                    {user.is_active ? (
+                      <>
+                        <UserX size={14} strokeWidth={1.5} />
+                        Deactivate
+                      </>
+                    ) : (
+                      <>
+                        <UserCheck size={14} strokeWidth={1.5} />
+                        Reactivate
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {editUser?.id === user.id && (
+                <EditRoleDialog
+                  user={editUser}
+                  onClose={() => setEditUser(null)}
+                />
+              )}
+            </Dialog>
+          )
+        },
+      },
+    ],
+    [toggleActive, editUser]
+  )
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: users ?? [],
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: 20 } },
+  })
 
   return (
     <div>
@@ -197,14 +358,23 @@ export function UsersPage() {
       <div className="rounded-lg border border-hairline bg-surface">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className={header.id === "actions" ? "w-10" : undefined}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
           </TableHeader>
           <TableBody>
             {isLoading &&
@@ -218,10 +388,10 @@ export function UsersPage() {
                 </TableRow>
               ))}
 
-            {!isLoading && !users?.length && (
+            {!isLoading && table.getRowModel().rows.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={columns.length}
                   className="py-8 text-center text-sm text-ink-mute"
                 >
                   No users yet.
@@ -229,78 +399,19 @@ export function UsersPage() {
               </TableRow>
             )}
 
-            {users?.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium text-ink">
-                  {user.full_name ?? "—"}
-                </TableCell>
-                <TableCell className="text-ink-mute">{user.email}</TableCell>
-                <TableCell>
-                  <RoleBadge role={user.role} />
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.is_active ? "active" : "inactive"}>
-                    {user.is_active ? "Active" : "Inactive"}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-ink-mute">
-                  {user.created_at
-                    ? new Date(user.created_at).toLocaleDateString()
-                    : "—"}
-                </TableCell>
-                <TableCell>
-                  <Dialog
-                    open={editUser?.id === user.id}
-                    onOpenChange={(o) => !o && setEditUser(null)}
-                  >
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7">
-                          <MoreHorizontal size={14} strokeWidth={1.5} />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setEditUser(user)}>
-                          Change role
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() =>
-                            toggleActive.mutate({
-                              userId: user.id,
-                              isActive: !user.is_active,
-                            })
-                          }
-                          className={
-                            user.is_active ? "text-crimson" : undefined
-                          }
-                        >
-                          {user.is_active ? (
-                            <>
-                              <UserX size={14} strokeWidth={1.5} />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <UserCheck size={14} strokeWidth={1.5} />
-                              Reactivate
-                            </>
-                          )}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    {editUser?.id === user.id && (
-                      <EditRoleDialog
-                        user={editUser}
-                        onClose={() => setEditUser(null)}
-                      />
-                    )}
-                  </Dialog>
-                </TableCell>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
         </Table>
+
+        <DataTablePagination table={table} />
       </div>
     </div>
   )

@@ -1,8 +1,18 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Pencil, Plus } from "lucide-react"
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type SortingState,
+} from "@tanstack/react-table"
+import { ArrowDown, ArrowUp, ChevronsUpDown, Pencil, Plus } from "lucide-react"
 
+import { DataTablePagination } from "@/components/ui/data-table-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,12 +40,27 @@ import type { Product } from "../products.types"
 
 type StatusFilter = "all" | "active" | "inactive"
 
+function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
+  if (direction === "asc")
+    return <ArrowUp size={12} strokeWidth={1.5} className="shrink-0" />
+  if (direction === "desc")
+    return <ArrowDown size={12} strokeWidth={1.5} className="shrink-0" />
+  return (
+    <ChevronsUpDown
+      size={12}
+      strokeWidth={1.5}
+      className="shrink-0 text-ink-faint"
+    />
+  )
+}
+
 export function CatalogPage() {
   const { data: products, isLoading } = useProducts()
   const toggleActive = useToggleProductActive()
 
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
+  const [sorting, setSorting] = useState<SortingState>([])
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editProduct, setEditProduct] = useState<Product | null>(null)
 
@@ -54,15 +79,134 @@ export function CatalogPage() {
     })
   }, [products, search, statusFilter])
 
-  function openAdd() {
-    setEditProduct(null)
-    setSheetOpen(true)
-  }
+  const columns = useMemo<ColumnDef<Product>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <button
+            className="flex items-center gap-1 hover:text-ink"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <SortIcon direction={column.getIsSorted()} />
+          </button>
+        ),
+        cell: ({ row }) => (
+          <span className="font-medium text-ink">{row.original.name}</span>
+        ),
+      },
+      {
+        accessorKey: "category",
+        header: ({ column }) => (
+          <button
+            className="flex items-center gap-1 hover:text-ink"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Category
+            <SortIcon direction={column.getIsSorted()} />
+          </button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-ink-mute">{row.original.category ?? "—"}</span>
+        ),
+      },
+      {
+        accessorKey: "unit",
+        header: "Unit",
+        cell: ({ row }) => (
+          <span className="text-ink-mute capitalize">
+            {row.original.unit ?? "—"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "unit_price",
+        header: ({ column }) => (
+          <button
+            className="flex w-full items-center justify-end gap-1 hover:text-ink"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Unit price
+            <SortIcon direction={column.getIsSorted()} />
+          </button>
+        ),
+        cell: ({ row }) => (
+          <span className="block text-right font-mono text-ink tabular-nums">
+            {row.original.unit_price.toLocaleString()}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "cost_price",
+        header: () => <span className="block text-right">Cost price</span>,
+        cell: ({ row }) => (
+          <span className="block text-right font-mono text-ink-mute tabular-nums">
+            {row.original.cost_price?.toLocaleString() ?? "—"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "is_active",
+        header: "Status",
+        cell: ({ row }) => {
+          const product = row.original
+          return (
+            <div className="flex items-center gap-2">
+              <Switch
+                size="sm"
+                checked={product.is_active ?? false}
+                onCheckedChange={(v) =>
+                  toggleActive.mutate({ productId: product.id, isActive: v })
+                }
+              />
+              <Badge variant={product.is_active ? "active" : "inactive"}>
+                {product.is_active ? "Active" : "Inactive"}
+              </Badge>
+            </div>
+          )
+        },
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => {
+          const product = row.original
+          return (
+            <div className="flex items-center justify-end gap-1">
+              <PriceHistoryDialog
+                productId={product.id}
+                productName={product.name}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={() => {
+                  setEditProduct(product)
+                  setSheetOpen(true)
+                }}
+              >
+                <Pencil size={14} strokeWidth={1.5} />
+              </Button>
+            </div>
+          )
+        },
+      },
+    ],
+    [toggleActive]
+  )
 
-  function openEdit(product: Product) {
-    setEditProduct(product)
-    setSheetOpen(true)
-  }
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: filtered,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: 20 } },
+  })
 
   return (
     <div>
@@ -73,7 +217,13 @@ export function CatalogPage() {
             Manage your service catalog.
           </p>
         </div>
-        <Button size="sm" onClick={openAdd}>
+        <Button
+          size="sm"
+          onClick={() => {
+            setEditProduct(null)
+            setSheetOpen(true)
+          }}
+        >
           <Plus size={14} strokeWidth={1.5} />
           Add product
         </Button>
@@ -105,15 +255,23 @@ export function CatalogPage() {
       <div className="rounded-lg border border-hairline bg-surface">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead className="text-right">Unit price</TableHead>
-              <TableHead className="text-right">Cost price</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-24" />
-            </TableRow>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className={header.id === "actions" ? "w-24" : undefined}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
           </TableHeader>
           <TableBody>
             {isLoading &&
@@ -127,10 +285,10 @@ export function CatalogPage() {
                 </TableRow>
               ))}
 
-            {!isLoading && !filtered.length && (
+            {!isLoading && table.getRowModel().rows.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={columns.length}
                   className="py-8 text-center text-sm text-ink-mute"
                 >
                   {products?.length === 0
@@ -140,60 +298,19 @@ export function CatalogPage() {
               </TableRow>
             )}
 
-            {filtered.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="font-medium text-ink">
-                  {product.name}
-                </TableCell>
-                <TableCell className="text-ink-mute">
-                  {product.category ?? "—"}
-                </TableCell>
-                <TableCell className="text-ink-mute capitalize">
-                  {product.unit ?? "—"}
-                </TableCell>
-                <TableCell className="text-right font-mono text-ink tabular-nums">
-                  {product.unit_price.toLocaleString()}
-                </TableCell>
-                <TableCell className="text-right font-mono text-ink-mute tabular-nums">
-                  {product.cost_price?.toLocaleString() ?? "—"}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      size="sm"
-                      checked={product.is_active ?? false}
-                      onCheckedChange={(v) =>
-                        toggleActive.mutate({
-                          productId: product.id,
-                          isActive: v,
-                        })
-                      }
-                    />
-                    <Badge variant={product.is_active ? "active" : "inactive"}>
-                      {product.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-end gap-1">
-                    <PriceHistoryDialog
-                      productId={product.id}
-                      productName={product.name}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => openEdit(product)}
-                    >
-                      <Pencil size={14} strokeWidth={1.5} />
-                    </Button>
-                  </div>
-                </TableCell>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
         </Table>
+
+        <DataTablePagination table={table} />
       </div>
 
       <ProductSheet
