@@ -1,8 +1,9 @@
-export default function DiscountRulesPage() {
-  return (
-    <div>
-      <h1 className="text-xl font-semibold text-ink">Discount Rules</h1>
-      <p className="mt-1 text-sm text-ink-mute">Coming in Sprint 2.</p>
-    </div>
-  )
+import { requireRole } from "@/lib/auth.utils"
+import { getDiscountRule } from "@/features/settings/services/discount-rules.service"
+import { DiscountRulesPage } from "@/features/settings/pages/discount-rules.page"
+
+export default async function Page() {
+  const profile = await requireRole("admin")
+  const rule = await getDiscountRule(profile.company_id!)
+  return <DiscountRulesPage rule={rule} />
 }
