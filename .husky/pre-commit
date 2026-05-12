@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# Block direct commits to master/main
+branch=$(git symbolic-ref --short HEAD)
+if [ "$branch" = "master" ] || [ "$branch" = "main" ]; then
+  echo "Direct commits to $branch are not allowed. Create a branch."
+  exit 1
+fi
+
+# Check filename conventions on staged .ts/.tsx files
+PATTERN='^[a-z0-9]+(-[a-z0-9]+)*\.(page|component|layout|hook|action|route|schema|types|utils|service|constants|config)\.(ts|tsx)$'
+RESERVED='^(page|layout|loading|error|not-found|template|default|global-error|route|middleware|proxy|instrumentation)\.(tsx?)$'
+
+invalid=""
+staged=$(git diff --cached --name-only --diff-filter=ACR | grep -E '\.(ts|tsx)$' || true)
+
+if [ -n "$staged" ]; then
+  while IFS= read -r file; do
+    [ -z "$file" ] && continue
+    f=$(basename "$file")
+    case "$f" in *.d.ts) continue ;; esac
+    case "$file" in *components/ui/*) continue ;; esac
+    echo "$f" | grep -qE "$RESERVED" && continue
+    echo "$f" | grep -qE "$PATTERN" || invalid="$invalid\n  $file"
+  done << EOF
+$staged
+EOF
+fi
+
+if [ -n "$invalid" ]; then
+  echo "Filename convention error — files must follow kebab-case.type.ext:"
+  printf "$invalid\n"
+  echo "Expected: name.type.(ts|tsx) e.g. sidebar.component.tsx, use-auth.hook.ts"
+  exit 1
+fi
+
+# If any migration file is staged, docs/database-schema.md must be too
+migrations_staged=$(git diff --cached --name-only --diff-filter=ACR | grep -E '^migrations/.*\.sql$' || true)
+if [ -n "$migrations_staged" ]; then
+  schema_staged=$(git diff --cached --name-only | grep -F 'docs/database-schema.md' || true)
+  if [ -z "$schema_staged" ]; then
+    echo "Schema drift check failed:"
+    echo "  You staged a migration but did not update docs/database-schema.md."
+    echo "  Update the schema doc to reflect the new columns/tables/functions, then re-stage it."
+    echo ""
+    echo "  Staged migrations:"
+    echo "$migrations_staged" | sed 's/^/    /'
+    exit 1
+  fi
+fi
+
+npx lint-staged
