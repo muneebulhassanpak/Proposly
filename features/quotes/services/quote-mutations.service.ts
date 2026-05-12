@@ -55,16 +55,13 @@ export async function sendQuote(
   const { error: emailErr } = await resend.emails.send({
     from: RESEND_FROM,
     to: clientEmail,
-    subject: `${companyName}: ${quote.title}`,
-    html: `
-      <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:40px 24px;color:#1A1714">
-        <h1 style="font-size:20px;font-weight:600;margin-bottom:8px">${quote.title}</h1>
-        <p style="color:#7A726A;margin-bottom:24px">Hi ${clientName},</p>
-        <p style="margin-bottom:24px">${companyName} has sent you a proposal. Click the link below to view it:</p>
-        <a href="${publicLink}" style="display:inline-block;background:#1E40D8;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:500">View Proposal</a>
-        <p style="margin-top:32px;color:#7A726A;font-size:13px">Or copy this link: ${publicLink}</p>
-      </div>
-    `,
+    subject: `${companyName} — ${quote.title}`,
+    html: buildProposalEmailHtml({
+      title: quote.title,
+      clientName,
+      companyName,
+      publicLink,
+    }),
   })
 
   if (emailErr)
@@ -88,7 +85,7 @@ export async function sendQuote(
     quote_id: quoteId,
     sent_by: actorId,
     recipient: clientEmail,
-    subject: `${companyName}: ${quote.title}`,
+    subject: `${companyName} — ${quote.title}`,
     sent_at: new Date().toISOString(),
   })
 
@@ -102,4 +99,60 @@ export async function sendQuote(
   })
 
   return { success: true }
+}
+
+function buildProposalEmailHtml(params: {
+  title: string
+  clientName: string
+  companyName: string
+  publicLink: string
+}): string {
+  const { title, clientName, companyName, publicLink } = params
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#F4F1EA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F4F1EA;padding:48px 24px">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%">
+          <!-- Header -->
+          <tr>
+            <td style="padding-bottom:32px;text-align:center">
+              <span style="font-size:18px;font-weight:600;color:#1A1714;font-style:italic;letter-spacing:-0.01em">Proposly</span>
+            </td>
+          </tr>
+          <!-- Card -->
+          <tr>
+            <td style="background-color:#FFFFFF;border:1px solid #E5DFD4;border-radius:10px;padding:40px 36px">
+              <p style="margin:0 0 4px;font-size:13px;color:#7A726A;text-transform:uppercase;letter-spacing:0.05em;font-weight:500">New Proposal</p>
+              <h1 style="margin:0 0 24px;font-size:22px;font-weight:600;color:#1A1714;line-height:1.3">${title}</h1>
+              <p style="margin:0 0 16px;font-size:15px;color:#1A1714;line-height:1.5">Hi ${clientName},</p>
+              <p style="margin:0 0 32px;font-size:15px;color:#4A433D;line-height:1.5">${companyName} has prepared a proposal for you. Click below to review the details.</p>
+              <!-- CTA -->
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#1E40D8;border-radius:6px">
+                    <a href="${publicLink}" target="_blank" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:500;color:#FFFFFF;text-decoration:none">View Proposal</a>
+                  </td>
+                </tr>
+              </table>
+              <!-- Fallback link -->
+              <p style="margin:32px 0 0;font-size:12px;color:#7A726A;line-height:1.5;word-break:break-all">Or paste this link in your browser:<br><a href="${publicLink}" style="color:#1E40D8;text-decoration:none">${publicLink}</a></p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding-top:24px;text-align:center">
+              <p style="margin:0;font-size:12px;color:#7A726A">Sent via <span style="font-style:italic">Proposly</span> on behalf of ${companyName}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
 }
