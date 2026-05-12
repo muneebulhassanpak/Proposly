@@ -1,15 +1,9 @@
 "use client"
 
-import {
-  ArrowDown,
-  ArrowUp,
-  ChevronsUpDown,
-  MoreHorizontal,
-  UserCheck,
-  UserX,
-} from "lucide-react"
+import { MoreHorizontal, UserCheck, UserX } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
 
+import { SortIcon } from "@/components/sort-icon.component"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
@@ -23,20 +17,6 @@ import {
 import { ROLE_LABELS } from "@/lib/constants/roles.constants"
 import { EditRoleDialog } from "./edit-role-dialog.component"
 import type { UserProfile, UserRole } from "../settings.types"
-
-function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
-  if (direction === "asc")
-    return <ArrowUp size={12} strokeWidth={1.5} className="shrink-0" />
-  if (direction === "desc")
-    return <ArrowDown size={12} strokeWidth={1.5} className="shrink-0" />
-  return (
-    <ChevronsUpDown
-      size={12}
-      strokeWidth={1.5}
-      className="shrink-0 text-ink-faint"
-    />
-  )
-}
 
 function RoleBadge({ role }: { role: UserRole }) {
   const variant =

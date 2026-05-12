@@ -1,26 +1,13 @@
 "use client"
 
-import { ArrowDown, ArrowUp, ChevronsUpDown, Pencil } from "lucide-react"
+import { Pencil } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
 
+import { SortIcon } from "@/components/sort-icon.component"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { PriceHistoryDialog } from "./price-history-dialog.component"
 import type { Product } from "../products.types"
-
-function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
-  if (direction === "asc")
-    return <ArrowUp size={12} strokeWidth={1.5} className="shrink-0" />
-  if (direction === "desc")
-    return <ArrowDown size={12} strokeWidth={1.5} className="shrink-0" />
-  return (
-    <ChevronsUpDown
-      size={12}
-      strokeWidth={1.5}
-      className="shrink-0 text-ink-faint"
-    />
-  )
-}
 
 interface CatalogColumnParams {
   onEdit: (product: Product) => void
