@@ -17,16 +17,24 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, role, full_name, email, avatar_url")
+    .select("id, role, full_name, email, avatar_url, company_id")
     .eq("id", user.id)
     .single()
 
   if (!profile) redirect("/login")
 
+  const { data: company } = profile.company_id
+    ? await supabase
+        .from("companies")
+        .select("name")
+        .eq("id", profile.company_id)
+        .single()
+    : { data: null }
+
   return (
     <Providers>
       <SidebarProvider className="h-svh">
-        <AppSidebar role={profile.role} />
+        <AppSidebar profile={profile} companyName={company?.name ?? null} />
         <SidebarInset className="overflow-hidden">
           <TopNav profile={profile} />
           <div className="flex-1 overflow-y-auto p-6">{children}</div>

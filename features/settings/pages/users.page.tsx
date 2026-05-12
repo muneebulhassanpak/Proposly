@@ -1,6 +1,9 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+
+import { createClient } from "@/lib/supabase/browser.service"
 import {
   flexRender,
   getCoreRowModel,
@@ -213,6 +216,13 @@ export function UsersPage() {
   const { data: users, isLoading } = useUsers()
   const toggleActive = useToggleUserActive()
   const [editUser, setEditUser] = useState<UserProfile | null>(null)
+  const { data: currentUserId } = useQuery({
+    queryKey: ["auth-user-id"],
+    queryFn: async () => {
+      const { data } = await createClient().auth.getUser()
+      return data.user?.id ?? null
+    },
+  })
   const [sorting, setSorting] = useState<SortingState>([])
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all")
@@ -285,6 +295,7 @@ export function UsersPage() {
         id: "actions",
         cell: ({ row }) => {
           const user = row.original
+          if (user.id === currentUserId) return null
           return (
             <Dialog
               open={editUser?.id === user.id}
@@ -335,7 +346,7 @@ export function UsersPage() {
         },
       },
     ],
-    [toggleActive, editUser]
+    [toggleActive, editUser, currentUserId]
   )
 
   // eslint-disable-next-line react-hooks/incompatible-library

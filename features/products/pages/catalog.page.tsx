@@ -13,7 +13,6 @@ import {
 import { ArrowDown, ArrowUp, ChevronsUpDown, Pencil, Plus } from "lucide-react"
 
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -152,18 +151,13 @@ export function CatalogPage() {
         cell: ({ row }) => {
           const product = row.original
           return (
-            <div className="flex items-center gap-2">
-              <Switch
-                size="sm"
-                checked={product.is_active ?? false}
-                onCheckedChange={(v) =>
-                  toggleActive.mutate({ productId: product.id, isActive: v })
-                }
-              />
-              <Badge variant={product.is_active ? "active" : "inactive"}>
-                {product.is_active ? "Active" : "Inactive"}
-              </Badge>
-            </div>
+            <Switch
+              size="sm"
+              checked={product.is_active ?? false}
+              onCheckedChange={(v) =>
+                toggleActive.mutate({ productId: product.id, isActive: v })
+              }
+            />
           )
         },
       },
