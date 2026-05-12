@@ -2,9 +2,13 @@
 
 import { requireRole } from "@/lib/auth.utils"
 import { createAdminClient } from "@/lib/supabase/admin.service"
-import { createClient } from "@/lib/supabase/server.service"
 import { createUserSchema, editRoleSchema } from "../schemas/user.schema"
 import type { UserRole } from "../settings.types"
+import {
+  toggleUserActive,
+  updateUserRole,
+  upsertUserProfile,
+} from "../services/users.service"
 
 export type UserActionResult = { success: boolean; error?: string }
 
@@ -33,15 +37,14 @@ export async function createUserAction(
 
   if (createError) return { success: false, error: createError.message }
 
-  const { error: profileError } = await admin.from("profiles").upsert({
-    id: data.user.id,
+  const { error } = await upsertUserProfile(data.user.id, {
     email: parsed.data.email,
     full_name: parsed.data.name,
     role: parsed.data.role,
     company_id: profile.company_id,
   })
 
-  if (profileError) return { success: false, error: profileError.message }
+  if (error) return { success: false, error }
   return { success: true }
 }
 
@@ -50,19 +53,20 @@ export async function updateUserRoleAction(
   role: UserRole
 ): Promise<UserActionResult> {
   const profile = await requireRole("admin")
+  if (!profile.company_id)
+    return { success: false, error: "No company associated" }
 
   const parsed = editRoleSchema.safeParse({ userId, role })
   if (!parsed.success)
     return { success: false, error: parsed.error.issues[0].message }
 
-  const supabase = await createClient()
-  const { error } = await supabase
-    .from("profiles")
-    .update({ role: parsed.data.role })
-    .eq("id", parsed.data.userId)
-    .eq("company_id", profile.company_id!)
+  const { error } = await updateUserRole(
+    parsed.data.userId,
+    parsed.data.role,
+    profile.company_id
+  )
 
-  if (error) return { success: false, error: error.message }
+  if (error) return { success: false, error }
   return { success: true }
 }
 
@@ -71,14 +75,10 @@ export async function toggleUserActiveAction(
   isActive: boolean
 ): Promise<UserActionResult> {
   const profile = await requireRole("admin")
+  if (!profile.company_id)
+    return { success: false, error: "No company associated" }
 
-  const supabase = await createClient()
-  const { error } = await supabase
-    .from("profiles")
-    .update({ is_active: isActive })
-    .eq("id", userId)
-    .eq("company_id", profile.company_id!)
-
-  if (error) return { success: false, error: error.message }
+  const { error } = await toggleUserActive(userId, isActive, profile.company_id)
+  if (error) return { success: false, error }
   return { success: true }
 }

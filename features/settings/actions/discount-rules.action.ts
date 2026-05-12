@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache"
 
 import { requireRole } from "@/lib/auth.utils"
-import { createClient } from "@/lib/supabase/server.service"
 import { discountRuleSchema } from "../schemas/discount-rules.schema"
+import { upsertDiscountRule } from "../services/discount-rules.service"
 
 export type DiscountRuleActionState = {
   error?: string
@@ -26,25 +26,12 @@ export async function upsertDiscountRuleAction(
     return { error: parsed.error.issues[0].message }
   }
 
-  const supabase = await createClient()
+  const { error } = await upsertDiscountRule(
+    profile.company_id,
+    parsed.data.threshold_percent
+  )
 
-  const { data: existing } = await supabase
-    .from("discount_rules")
-    .select("id")
-    .eq("company_id", profile.company_id)
-    .single()
-
-  const { error } = existing
-    ? await supabase
-        .from("discount_rules")
-        .update({ threshold_percent: parsed.data.threshold_percent })
-        .eq("id", existing.id)
-    : await supabase.from("discount_rules").insert({
-        company_id: profile.company_id,
-        threshold_percent: parsed.data.threshold_percent,
-      })
-
-  if (error) return { error: error.message }
+  if (error) return { error }
 
   revalidatePath("/admin/discount-rules")
   return { success: true }
