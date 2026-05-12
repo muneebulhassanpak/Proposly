@@ -115,7 +115,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
 
       {/* Profile footer */}
       <SidebarFooter className="p-3">
-        <div className="flex items-center gap-2.5 overflow-hidden px-1 py-1">
+        <div className="flex items-center gap-2.5 px-1 py-1">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] bg-accent text-xs font-semibold text-white">
             {getInitials(profile.full_name)}
           </div>
