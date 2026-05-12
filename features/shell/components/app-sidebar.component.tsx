@@ -103,7 +103,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
                   >
                     <Link href="/admin/settings">
                       <Settings size={16} strokeWidth={1.5} />
-                      <span>Settings</span>
+                      <span>Company Settings</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
