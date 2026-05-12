@@ -58,7 +58,10 @@ export async function getDashboardSummary(
   }
 }
 
-/** Sortable columns that map directly to DB fields */
+/**
+ * Columns that map directly to a quotes DB column for server-side sorting.
+ * Derived fields (total, clientName) are sorted in JS after the query.
+ */
 const SORT_COLUMN_MAP: Record<string, string> = {
   title: "title",
   status: "status",
@@ -163,6 +166,19 @@ export async function getDashboardQuotes(
       createdAt: q.created_at ?? "",
     }
   })
+
+  // Sort by derived fields that can't be sorted at DB level
+  if (sortBy === "total" || sortBy === "clientName") {
+    mapped.sort((a, b) => {
+      const aVal = a[sortBy] ?? ""
+      const bVal = b[sortBy] ?? ""
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return sortDesc ? bVal - aVal : aVal - bVal
+      }
+      const cmp = String(aVal).localeCompare(String(bVal))
+      return sortDesc ? -cmp : cmp
+    })
+  }
 
   // pending_approval filter must be done client-side since it depends on
   // joined approval data, not a direct column
