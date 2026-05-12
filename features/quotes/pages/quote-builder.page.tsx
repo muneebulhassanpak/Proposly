@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { Controller, useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
 import { AlertTriangle, Eye, Plus } from "lucide-react"
@@ -21,10 +23,13 @@ import { ClientCombobox } from "../components/client-combobox.component"
 import { LineItemsTable } from "../components/line-items-table.component"
 import { LoadTemplateDialog } from "../components/load-template-dialog.component"
 import { ProductSearchCombobox } from "../components/product-search-combobox.component"
+import {
+  quoteBuilderSchema,
+  type QuoteBuilderFormData,
+} from "../schemas/quote-builder.schema"
 import type {
   Client,
   InitialQuoteData,
-  LineItemRow,
   ProductSearchResult,
 } from "../quotes.types"
 
@@ -50,27 +55,40 @@ export function QuoteBuilderPage({
 }: QuoteBuilderPageProps) {
   const router = useRouter()
 
-  const [title, setTitle] = useState(initial?.title ?? "")
-  const [clientId, setClientId] = useState<string | null>(
-    initial?.client_id ?? null
-  )
+  // selectedClient is display-only state for the combobox label — not a form field
   const [selectedClient, setSelectedClient] = useState<Client | null>(
     initial?.client ?? null
   )
-  const [expiresAt, setExpiresAt] = useState<Date | null>(
-    initial?.expires_at ? new Date(initial.expires_at) : null
-  )
-  const [notes, setNotes] = useState(initial?.notes ?? "")
-  const [items, setItems] = useState<LineItemRow[]>(initial?.line_items ?? [])
-  const [discountPercent, setDiscountPercent] = useState(
-    initial?.discount_percent ?? 0
-  )
-  const [taxPercent, setTaxPercent] = useState(
-    initial?.tax_percent ?? defaultTaxPercent
-  )
 
-  // Computed totals
-  const subtotal = items.reduce(
+  const {
+    register,
+    control,
+    handleSubmit,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = useForm<QuoteBuilderFormData>({
+    resolver: zodResolver(quoteBuilderSchema),
+    defaultValues: {
+      title: initial?.title ?? "",
+      client_id: initial?.client_id ?? null,
+      expires_at: initial?.expires_at ? new Date(initial.expires_at) : null,
+      notes: initial?.notes ?? "",
+      line_items: initial?.line_items ?? [],
+      discount_percent: initial?.discount_percent ?? 0,
+      tax_percent: initial?.tax_percent ?? defaultTaxPercent,
+    },
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  })
+
+  // Reactive values for computed totals and derived UI state
+  const [watchedTitle, lineItems, discountPercent, taxPercent] = useWatch({
+    control,
+    name: ["title", "line_items", "discount_percent", "tax_percent"],
+  })
+
+  const subtotal = lineItems.reduce(
     (sum, item) => sum + item.unit_price * item.quantity,
     0
   )
@@ -78,26 +96,23 @@ export function QuoteBuilderPage({
   const taxableAmount = subtotal - discountAmount
   const taxAmount = (taxableAmount * taxPercent) / 100
   const total = taxableAmount + taxAmount
-
-  // Margin
-  const totalCost = items.reduce(
+  const totalCost = lineItems.reduce(
     (sum, item) => sum + (item.cost_price ?? 0) * item.quantity,
     0
   )
   const grossMarginPercent = total > 0 ? ((total - totalCost) / total) * 100 : 0
-
   const exceedsThreshold =
     discountThreshold !== null && discountPercent > discountThreshold
 
   const saveDraft = useMutation({
-    mutationFn: () =>
+    mutationFn: (data: QuoteBuilderFormData) =>
       saveDraftAction({
         quote_id: quoteId,
-        title,
-        client_id: clientId,
-        expires_at: expiresAt ? expiresAt.toISOString() : null,
-        notes,
-        line_items: items.map((item, i) => ({
+        title: data.title,
+        client_id: data.client_id,
+        expires_at: data.expires_at ? data.expires_at.toISOString() : null,
+        notes: data.notes,
+        line_items: data.line_items.map((item, i) => ({
           product_id: item.product_id,
           name: item.name,
           description: item.description,
@@ -107,15 +122,13 @@ export function QuoteBuilderPage({
           unit: item.unit,
           sort_order: i,
         })),
-        discount_percent: discountPercent,
-        tax_percent: taxPercent,
+        discount_percent: data.discount_percent,
+        tax_percent: data.tax_percent,
       }),
     onSuccess: (result) => {
       if (result.success) {
         toast.success("Draft saved.")
-        if (!quoteId) {
-          router.push(`/quotes/${result.quoteId}`)
-        }
+        if (!quoteId) router.push(`/quotes/${result.quoteId}`)
       } else {
         toast.error(result.error)
       }
@@ -123,41 +136,47 @@ export function QuoteBuilderPage({
   })
 
   function addProductItem(product: ProductSearchResult) {
-    const newItem: LineItemRow = {
-      localId: crypto.randomUUID(),
-      product_id: product.id,
-      name: product.name,
-      description: product.description ?? "",
-      unit_price: Number(product.unit_price),
-      cost_price:
-        product.cost_price != null ? Number(product.cost_price) : null,
-      quantity: 1,
-      unit: product.unit ?? "item",
-      sort_order: items.length,
-    }
-    setItems((prev) => [...prev, newItem])
+    const current = getValues("line_items")
+    setValue("line_items", [
+      ...current,
+      {
+        localId: crypto.randomUUID(),
+        product_id: product.id,
+        name: product.name,
+        description: product.description ?? "",
+        unit_price: Number(product.unit_price),
+        cost_price:
+          product.cost_price != null ? Number(product.cost_price) : null,
+        quantity: 1,
+        unit: product.unit ?? "item",
+        sort_order: current.length,
+      },
+    ])
   }
 
   function addCustomItem() {
-    const newItem: LineItemRow = {
-      localId: crypto.randomUUID(),
-      product_id: null,
-      name: "",
-      description: "",
-      unit_price: 0,
-      cost_price: null,
-      quantity: 1,
-      unit: "item",
-      sort_order: items.length,
-    }
-    setItems((prev) => [...prev, newItem])
+    const current = getValues("line_items")
+    setValue("line_items", [
+      ...current,
+      {
+        localId: crypto.randomUUID(),
+        product_id: null,
+        name: "",
+        description: "",
+        unit_price: 0,
+        cost_price: null,
+        quantity: 1,
+        unit: "item",
+        sort_order: current.length,
+      },
+    ])
   }
 
   const isNew = !quoteId
-  const pageTitle = isNew ? "New Quote" : title || "Edit Quote"
+  const pageTitle = isNew ? "New Quote" : watchedTitle || "Edit Quote"
 
   return (
-    <div>
+    <form onSubmit={handleSubmit((data) => saveDraft.mutate(data))} noValidate>
       {/* Page header */}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
@@ -168,8 +187,8 @@ export function QuoteBuilderPage({
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <LoadTemplateDialog
-            hasItems={items.length > 0}
-            onLoad={(templateItems) => setItems(templateItems)}
+            hasItems={lineItems.length > 0}
+            onLoad={(templateItems) => setValue("line_items", templateItems)}
           />
           <Tooltip>
             <TooltipTrigger asChild>
@@ -182,11 +201,7 @@ export function QuoteBuilderPage({
             </TooltipTrigger>
             <TooltipContent>Save first to preview</TooltipContent>
           </Tooltip>
-          <Button
-            size="sm"
-            loading={saveDraft.isPending}
-            onClick={() => saveDraft.mutate()}
-          >
+          <Button type="submit" size="sm" loading={saveDraft.isPending}>
             Save as Draft
           </Button>
         </div>
@@ -204,33 +219,47 @@ export function QuoteBuilderPage({
                 <Label htmlFor="quote-title">Title</Label>
                 <Input
                   id="quote-title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value.slice(0, 100))}
                   placeholder="e.g. Brand Identity Package"
                   maxLength={100}
+                  {...register("title")}
                 />
+                {errors.title && (
+                  <p className="text-xs text-crimson">{errors.title.message}</p>
+                )}
               </div>
 
               <div className="space-y-1.5">
                 <Label>Client</Label>
-                <ClientCombobox
-                  value={clientId}
-                  selectedClient={selectedClient}
-                  onChange={(id, client) => {
-                    setClientId(id)
-                    setSelectedClient(client)
-                  }}
+                <Controller
+                  control={control}
+                  name="client_id"
+                  render={({ field }) => (
+                    <ClientCombobox
+                      value={field.value}
+                      selectedClient={selectedClient}
+                      onChange={(id, client) => {
+                        field.onChange(id)
+                        setSelectedClient(client)
+                      }}
+                    />
+                  )}
                 />
               </div>
 
               <div className="space-y-1.5">
                 <Label>Expiry date</Label>
-                <DatePicker
-                  value={expiresAt}
-                  onChange={setExpiresAt}
-                  placeholder="No expiry"
-                  className="w-48"
-                  disablePast
+                <Controller
+                  control={control}
+                  name="expires_at"
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="No expiry"
+                      className="w-48"
+                      disablePast
+                    />
+                  )}
                 />
               </div>
 
@@ -243,10 +272,9 @@ export function QuoteBuilderPage({
                 </Label>
                 <Textarea
                   id="quote-notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add any internal context or instructions…"
                   rows={3}
+                  {...register("notes")}
                 />
               </div>
             </div>
@@ -258,14 +286,24 @@ export function QuoteBuilderPage({
               <h2 className="text-sm font-medium text-ink">Line items</h2>
               <div className="flex items-center gap-2">
                 <ProductSearchCombobox onSelect={addProductItem} />
-                <Button variant="outline" size="sm" onClick={addCustomItem}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addCustomItem}
+                >
                   <Plus size={14} strokeWidth={1.5} />
                   Custom item
                 </Button>
               </div>
             </div>
-
-            <LineItemsTable items={items} onChange={setItems} />
+            <Controller
+              control={control}
+              name="line_items"
+              render={({ field }) => (
+                <LineItemsTable items={field.value} onChange={field.onChange} />
+              )}
+            />
           </div>
         </div>
 
@@ -296,23 +334,29 @@ export function QuoteBuilderPage({
                     −{formatMoney(discountAmount)}
                   </span>
                 </div>
-                <Input
-                  id="discount-pct"
-                  type="number"
-                  min={0}
-                  max={100}
-                  step="any"
-                  value={discountPercent === 0 ? "" : discountPercent}
-                  onChange={(e) =>
-                    setDiscountPercent(
-                      Math.min(
-                        100,
-                        Math.max(0, parseFloat(e.target.value) || 0)
-                      )
-                    )
-                  }
-                  placeholder="0"
-                  className="h-8 text-right font-mono text-sm tabular-nums"
+                <Controller
+                  control={control}
+                  name="discount_percent"
+                  render={({ field }) => (
+                    <Input
+                      id="discount-pct"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="any"
+                      placeholder="0"
+                      value={field.value === 0 ? "" : field.value}
+                      onChange={(e) =>
+                        field.onChange(
+                          Math.min(
+                            100,
+                            Math.max(0, parseFloat(e.target.value) || 0)
+                          )
+                        )
+                      }
+                      className="h-8 text-right font-mono text-sm tabular-nums"
+                    />
+                  )}
                 />
               </div>
 
@@ -329,23 +373,29 @@ export function QuoteBuilderPage({
                     +{formatMoney(taxAmount)}
                   </span>
                 </div>
-                <Input
-                  id="tax-pct"
-                  type="number"
-                  min={0}
-                  max={100}
-                  step="any"
-                  value={taxPercent === 0 ? "" : taxPercent}
-                  onChange={(e) =>
-                    setTaxPercent(
-                      Math.min(
-                        100,
-                        Math.max(0, parseFloat(e.target.value) || 0)
-                      )
-                    )
-                  }
-                  placeholder="0"
-                  className="h-8 text-right font-mono text-sm tabular-nums"
+                <Controller
+                  control={control}
+                  name="tax_percent"
+                  render={({ field }) => (
+                    <Input
+                      id="tax-pct"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="any"
+                      placeholder="0"
+                      value={field.value === 0 ? "" : field.value}
+                      onChange={(e) =>
+                        field.onChange(
+                          Math.min(
+                            100,
+                            Math.max(0, parseFloat(e.target.value) || 0)
+                          )
+                        )
+                      }
+                      className="h-8 text-right font-mono text-sm tabular-nums"
+                    />
+                  )}
                 />
               </div>
 
@@ -411,12 +461,17 @@ export function QuoteBuilderPage({
 
           {/* Send for approval — only shown when discount exceeds threshold */}
           {exceedsThreshold && (
-            <Button variant="outline" className="w-full" disabled={!quoteId}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={!quoteId}
+            >
               Send for Approval
             </Button>
           )}
         </div>
       </div>
-    </div>
+    </form>
   )
 }
