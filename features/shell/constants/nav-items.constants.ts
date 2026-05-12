@@ -7,7 +7,6 @@ import {
   LayoutTemplate,
   Package,
   Percent,
-  Settings,
   Users,
 } from "lucide-react"
 
