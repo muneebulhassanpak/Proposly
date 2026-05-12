@@ -4,126 +4,248 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   THEME — maps CSS variables to Tailwind utility classes
+   ============================================================ */
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-instrument-serif);
+
+  /* shadcn semantic → Tailwind utilities */
+  --color-background:                   var(--background);
+  --color-foreground:                   var(--foreground);
+  --color-card:                         var(--card);
+  --color-card-foreground:              var(--card-foreground);
+  --color-popover:                      var(--popover);
+  --color-popover-foreground:           var(--popover-foreground);
+  --color-primary:                      var(--primary);
+  --color-primary-foreground:           var(--primary-foreground);
+  --color-secondary:                    var(--secondary);
+  --color-secondary-foreground:         var(--secondary-foreground);
+  --color-muted:                        var(--muted);
+  --color-muted-foreground:             var(--muted-foreground);
+  --color-accent:                       var(--accent);
+  --color-accent-foreground:            var(--accent-foreground);
+  --color-destructive:                  var(--destructive);
+  --color-border:                       var(--border);
+  --color-input:                        var(--input);
+  --color-ring:                         var(--ring);
+  --color-chart-1:                      var(--chart-1);
+  --color-chart-2:                      var(--chart-2);
+  --color-chart-3:                      var(--chart-3);
+  --color-chart-4:                      var(--chart-4);
+  --color-chart-5:                      var(--chart-5);
+  --color-sidebar:                      var(--sidebar);
+  --color-sidebar-foreground:           var(--sidebar-foreground);
+  --color-sidebar-primary:              var(--sidebar-primary);
+  --color-sidebar-primary-foreground:   var(--sidebar-primary-foreground);
+  --color-sidebar-accent:               var(--sidebar-accent);
+  --color-sidebar-accent-foreground:    var(--sidebar-accent-foreground);
+  --color-sidebar-border:               var(--sidebar-border);
+  --color-sidebar-ring:                 var(--sidebar-ring);
+
+  /* Proposly brand utilities — use these in components */
+  --color-paper:            var(--paper);
+  --color-paper-deep:       var(--paper-deep);
+  --color-surface:          var(--surface);
+  --color-ink:              var(--ink);
+  --color-ink-soft:         var(--ink-soft);
+  --color-ink-mute:         var(--ink-mute);
+  --color-ink-faint:        var(--ink-faint);
+  --color-hairline:         var(--hairline);
+  --color-hairline-strong:  var(--hairline-strong);
+  /* Cobalt — the brand accent. bg-cobalt = primary CTA blue */
+  --color-cobalt:           var(--cobalt);
+  --color-cobalt-soft:      var(--cobalt-soft);
+  --color-cobalt-ink:       var(--cobalt-ink);
+  /* Status palette */
+  --color-moss:             var(--moss);
+  --color-moss-soft:        var(--moss-soft);
+  --color-moss-ink:         var(--moss-ink);
+  --color-amber:            var(--amber);
+  --color-amber-soft:       var(--amber-soft);
+  --color-amber-ink:        var(--amber-ink);
+  --color-slate-status:     var(--slate-status);
+  --color-slate-soft:       var(--slate-soft);
+  --color-slate-ink:        var(--slate-ink);
+  --color-crimson:          var(--crimson);
+  --color-crimson-soft:     var(--crimson-soft);
+
+  /* Radii
+     Base: 0.625rem = 10px (cards)
+     sm  = 6px  — buttons, inputs
+     lg  = 10px — cards
+     xl  = 14px — modals, popovers
+     sharp = 2px — chips, status badges */
+  --radius-sm:    calc(var(--radius) * 0.6);
+  --radius-md:    calc(var(--radius) * 0.8);
+  --radius-lg:    var(--radius);
+  --radius-xl:    calc(var(--radius) * 1.4);
+  --radius-2xl:   calc(var(--radius) * 1.8);
+  --radius-3xl:   calc(var(--radius) * 2.2);
+  --radius-4xl:   calc(var(--radius) * 2.6);
+  --radius-sharp: 2px;
 }
 
+/* ============================================================
+   ROOT — Proposly brand tokens + shadcn semantic mappings
+   ============================================================ */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+  /* ── Proposly raw tokens ─────────────────────────────────── */
+
+  /* Surfaces */
+  --paper:           #F4F1EA;   /* warm cream — default app background */
+  --paper-deep:      #ECE7DC;   /* slightly deeper paper for nested surfaces */
+  --surface:         #FFFFFF;   /* pure white — cards, editor canvas */
+
+  /* Ink */
+  --ink:             #1A1714;   /* primary text */
+  --ink-soft:        #4A433D;   /* secondary text */
+  --ink-mute:        #7A726A;   /* tertiary / captions */
+  --ink-faint:       #B5ADA2;   /* placeholder, disabled */
+
+  /* Borders */
+  --hairline:        #E5DFD4;   /* 1px borders against paper */
+  --hairline-strong: #D8D0C2;   /* slightly stronger — table headers etc. */
+
+  /* Cobalt — the brand accent */
+  --cobalt:          #1E40D8;
+  --cobalt-hover:    #1733B5;
+  --cobalt-press:    #122993;
+  --cobalt-soft:     #E0E6FB;
+  --cobalt-ink:      #0D1F6B;
+
+  /* Status — Moss (signed / approved) */
+  --moss:            #3B6B4A;
+  --moss-soft:       #E2EBDF;
+  --moss-ink:        #1F3D27;
+
+  /* Status — Amber (viewed / pending) */
+  --amber:           #B07015;
+  --amber-soft:      #F5E8D2;
+  --amber-ink:       #5A3705;
+
+  /* Status — Slate (draft) — prefixed to avoid Tailwind's built-in slate scale */
+  --slate-status:    #6B6862;
+  --slate-soft:      #ECE9E2;
+  --slate-ink:       #2E2B27;
+
+  /* Status — Crimson (declined) */
+  --crimson:         #9C2B23;
+  --crimson-soft:    #F2DEDB;
+
+  /* Shadows — floating UI only (modals, popovers, dropdowns) */
+  --shadow-pop:   0 12px 32px -8px rgba(26, 23, 20, 0.15),
+                  0 2px 6px rgba(26, 23, 20, 0.06);
+  --shadow-modal: 0 24px 64px -12px rgba(26, 23, 20, 0.22),
+                  0 4px 12px rgba(26, 23, 20, 0.08);
+
+  /* Motion */
+  --ease-out-quart: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-hover:  120ms;
+  --dur-fast:   180ms;
+  --dur-base:   240ms;
+  --dur-slow:   320ms;
+
+  /* ── shadcn semantic tokens (mapped to Proposly brand) ────── */
+  /* NOTE: shadcn --accent = hover/subtle bg (paper-deep), NOT the brand blue.
+     The brand cobalt lives in --cobalt and --primary. Use bg-primary for CTA
+     buttons, bg-cobalt for direct brand-color references. */
+  --background:              var(--paper);
+  --foreground:              var(--ink);
+  --card:                    var(--surface);
+  --card-foreground:         var(--ink);
+  --popover:                 var(--surface);
+  --popover-foreground:      var(--ink);
+  --primary:                 var(--cobalt);
+  --primary-foreground:      #ffffff;
+  --secondary:               var(--paper-deep);
+  --secondary-foreground:    var(--ink);
+  --muted:                   var(--paper-deep);
+  --muted-foreground:        var(--ink-mute);
+  --accent:                  var(--paper-deep);
+  --accent-foreground:       var(--ink);
+  --destructive:             var(--crimson);
+  --destructive-foreground:  #ffffff;
+  --border:                  var(--hairline);
+  --input:                   var(--hairline-strong);
+  --ring:                    var(--cobalt);
+  --radius:                  0.625rem; /* 10px base */
+
+  /* Charts — status palette */
+  --chart-1: var(--cobalt);
+  --chart-2: var(--moss);
+  --chart-3: var(--amber);
+  --chart-4: var(--crimson);
+  --chart-5: var(--slate-status);
+
+  /* Sidebar */
+  --sidebar:                     var(--paper-deep);
+  --sidebar-foreground:          var(--ink);
+  --sidebar-primary:             var(--cobalt);
+  --sidebar-primary-foreground:  #ffffff;
+  --sidebar-accent:              var(--hairline);
+  --sidebar-accent-foreground:   var(--ink);
+  --sidebar-border:              var(--hairline);
+  --sidebar-ring:                var(--cobalt);
 }
 
+/* ============================================================
+   DARK MODE — ink-on-surface inverted
+   ============================================================ */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+  --background:              #1A1714;
+  --foreground:              #F4F1EA;
+  --card:                    #252118;
+  --card-foreground:         #F4F1EA;
+  --popover:                 #252118;
+  --popover-foreground:      #F4F1EA;
+  --primary:                 #4F67E8;
+  --primary-foreground:      #ffffff;
+  --secondary:               #2E2B27;
+  --secondary-foreground:    #F4F1EA;
+  --muted:                   #2E2B27;
+  --muted-foreground:        #B5ADA2;
+  --accent:                  #2E2B27;
+  --accent-foreground:       #F4F1EA;
+  --destructive:             #C4413A;
+  --destructive-foreground:  #ffffff;
+  --border:                  rgba(255, 255, 255, 0.1);
+  --input:                   rgba(255, 255, 255, 0.15);
+  --ring:                    #4F67E8;
+  --chart-1:                 #4F67E8;
+  --chart-2:                 #5A9E6E;
+  --chart-3:                 #D4902A;
+  --chart-4:                 #C4413A;
+  --chart-5:                 #9B9690;
+  --sidebar:                 #252118;
+  --sidebar-foreground:      #F4F1EA;
+  --sidebar-primary:         #4F67E8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent:          rgba(255, 255, 255, 0.08);
+  --sidebar-accent-foreground: #F4F1EA;
+  --sidebar-border:          rgba(255, 255, 255, 0.1);
+  --sidebar-ring:            #4F67E8;
 }
 
+/* ============================================================
+   BASE LAYER
+   ============================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+    font-size: 15px; /* Proposly body: 15px, not Tailwind default 16px */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
   html {
     @apply font-sans;
-    }
+  }
 }
