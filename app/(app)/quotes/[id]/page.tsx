@@ -1,5 +1,3 @@
-import { notFound } from "next/navigation"
-
 import { QuoteBuilderPage } from "@/features/quotes/pages/quote-builder.page"
 import {
   getCompanyQuoteSettings,

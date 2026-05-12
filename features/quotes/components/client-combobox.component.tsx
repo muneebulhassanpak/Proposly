@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Check, ChevronsUpDown, Plus, UserPlus } from "lucide-react"
 
 import { cn } from "@/lib/utils"
