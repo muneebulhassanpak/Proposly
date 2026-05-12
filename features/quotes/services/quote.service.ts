@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server.service"
-import { DEFAULT_PRODUCT_UNIT } from "@/features/products/constants/product.constants"
+import { DEFAULT_PRODUCT_UNIT } from "@/lib/constants/product.constants"
 import { QUOTE_STATUS } from "../constants/quote.constants"
 import type { SaveDraftInput } from "../schemas/save-draft.schema"
 import type {

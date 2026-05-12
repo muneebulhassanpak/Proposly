@@ -1,13 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
-import {
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table"
 
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
 import { Input } from "@/components/ui/input"
@@ -29,50 +22,19 @@ import {
 } from "@/components/ui/table"
 import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { CreateUserDialog } from "../components/create-user-dialog.component"
-import { getUsersColumns } from "../components/users-columns.component"
-import { useToggleUserActive, useUserFilters } from "../hooks/use-users.hook"
+import { useUsersTable } from "../hooks/use-users-table.hook"
 import type { UserRole } from "../settings.types"
 
 export function UsersPage() {
-  const toggleActive = useToggleUserActive()
   const {
+    table,
+    columns,
     search,
     setSearch,
     roleFilter,
     setRoleFilter,
-    sorting,
-    setSorting,
-    editUser,
-    setEditUser,
-    currentUserId,
-    filtered,
     isLoading,
-  } = useUserFilters()
-
-  const columns = useMemo(
-    () =>
-      getUsersColumns({
-        currentUserId,
-        editUserId: editUser?.id ?? null,
-        onEditUser: setEditUser,
-        onCloseEdit: () => setEditUser(null),
-        onToggleActive: (userId, isActive) =>
-          toggleActive.mutate({ userId, isActive }),
-      }),
-    [currentUserId, editUser, setEditUser, toggleActive]
-  )
-
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable({
-    data: filtered,
-    columns,
-    state: { sorting },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 20 } },
-  })
+  } = useUsersTable()
 
   return (
     <div>

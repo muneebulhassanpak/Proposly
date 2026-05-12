@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { ROUTES } from "@/lib/constants/routes.constants"
-import { DEFAULT_PRODUCT_UNIT } from "@/features/products/constants/product.constants"
+import { DEFAULT_PRODUCT_UNIT } from "@/lib/constants/product.constants"
 import { saveDraftAction } from "../actions/save-draft.action"
 import {
   quoteBuilderSchema,

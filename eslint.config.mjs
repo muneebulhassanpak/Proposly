@@ -46,6 +46,31 @@ const eslintConfig = defineConfig([
               message:
                 "Form state belongs in a custom hook (*.hook.ts), not in components or pages.",
             },
+            {
+              name: "@tanstack/react-table",
+              importNames: ["useReactTable"],
+              message:
+                "Table state belongs in a custom hook (*.hook.ts), not in components or pages.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // Cross-feature imports are banned. Shared code belongs in lib/.
+  {
+    files: ["features/**/*.ts", "features/**/*.tsx"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/features/*/*"],
+              message:
+                "Cross-feature imports are not allowed. Move shared code to lib/ instead.",
+            },
           ],
         },
       ],

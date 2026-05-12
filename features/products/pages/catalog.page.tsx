@@ -1,13 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
-import {
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table"
 import { Plus } from "lucide-react"
 
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
@@ -29,55 +22,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { getCatalogColumns } from "../components/catalog-columns.component"
 import { ProductDialog } from "../components/product-dialog.component"
-import {
-  useCatalogFilters,
-  useToggleProductActive,
-} from "../hooks/use-products.hook"
+import { useCatalogTable } from "../hooks/use-catalog-table.hook"
 
 export function CatalogPage() {
-  const toggleActive = useToggleProductActive()
   const {
+    table,
+    columns,
     search,
     setSearch,
     statusFilter,
     setStatusFilter,
-    sorting,
-    setSorting,
+    totalCount,
+    isLoading,
     sheetOpen,
     setSheetOpen,
     editProduct,
     setEditProduct,
-    filtered,
-    isLoading,
-    totalCount,
-  } = useCatalogFilters()
-
-  const columns = useMemo(
-    () =>
-      getCatalogColumns({
-        onEdit: (product) => {
-          setEditProduct(product)
-          setSheetOpen(true)
-        },
-        onToggleActive: (productId, isActive) =>
-          toggleActive.mutate({ productId, isActive }),
-      }),
-    [toggleActive, setEditProduct, setSheetOpen]
-  )
-
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable({
-    data: filtered,
-    columns,
-    state: { sorting },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 20 } },
-  })
+  } = useCatalogTable()
 
   return (
     <div>

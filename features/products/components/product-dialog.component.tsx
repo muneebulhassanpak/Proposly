@@ -19,7 +19,10 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { PRODUCT_UNITS, type ProductUnit } from "../constants/product.constants"
+import {
+  PRODUCT_UNITS,
+  type ProductUnit,
+} from "@/lib/constants/product.constants"
 import { useProductDialog } from "../hooks/use-product-dialog.hook"
 import type { Product } from "../products.types"
 

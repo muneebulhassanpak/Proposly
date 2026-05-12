@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { PRODUCT_UNITS } from "../constants/product.constants"
+import { PRODUCT_UNITS } from "@/lib/constants/product.constants"
 
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),

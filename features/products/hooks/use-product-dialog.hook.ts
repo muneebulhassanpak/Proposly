@@ -5,10 +5,10 @@ import { useState } from "react"
 import {
   DEFAULT_PRODUCT_UNIT,
   PRODUCT_UNITS,
-} from "../constants/product.constants"
+} from "@/lib/constants/product.constants"
 import { useCreateProduct, useUpdateProduct } from "./use-products.hook"
 import type { ProductFormData } from "../schemas/product.schema"
-import type { ProductUnit } from "../constants/product.constants"
+import type { ProductUnit } from "@/lib/constants/product.constants"
 import type { Product } from "../products.types"
 
 const DEFAULT_FORM: ProductFormData = {

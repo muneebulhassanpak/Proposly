@@ -19,7 +19,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { GripVertical, Trash2 } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
-import { DEFAULT_PRODUCT_UNIT } from "@/features/products/constants/product.constants"
+import { DEFAULT_PRODUCT_UNIT } from "@/lib/constants/product.constants"
 import type { LineItemRow } from "../quotes.types"
 
 interface LineItemsTableProps {

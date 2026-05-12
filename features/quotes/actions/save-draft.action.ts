@@ -1,11 +1,14 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { requireAuth } from "@/lib/auth.utils"
 import { ROUTES } from "@/lib/constants/routes.constants"
 import { saveDraftSchema } from "../schemas/save-draft.schema"
 import { saveDraft } from "../services/quote.service"
 
 export async function saveDraftAction(raw: unknown) {
+  await requireAuth()
+
   const parsed = saveDraftSchema.safeParse(raw)
   if (!parsed.success) {
     return {
@@ -23,9 +26,10 @@ export async function saveDraftAction(raw: unknown) {
 }
 
 export async function createClientAction(raw: unknown) {
+  await requireAuth()
+
   const { createNewClient } = await import("../services/quote.service")
 
-  // Basic validation
   if (!raw || typeof raw !== "object")
     return { success: false as const, error: "Invalid input" }
   const { name, email, company_name, phone } = raw as Record<string, unknown>
@@ -42,16 +46,19 @@ export async function createClientAction(raw: unknown) {
 }
 
 export async function searchClientsAction(query: string) {
+  await requireAuth()
   const { searchClients } = await import("../services/quote.service")
   return searchClients(query)
 }
 
 export async function searchProductsAction(query: string) {
+  await requireAuth()
   const { searchProducts } = await import("../services/quote.service")
   return searchProducts(query)
 }
 
 export async function getQuoteTemplatesAction() {
+  await requireAuth()
   const { getQuoteTemplates } = await import("../services/quote.service")
   return getQuoteTemplates()
 }
