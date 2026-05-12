@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache"
 
 import { requireRole } from "@/lib/auth.utils"
-import { createClient } from "@/lib/supabase/server.service"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { companySchema } from "../schemas/company.schema"
+import { updateCompany, uploadCompanyLogo } from "../services/company.service"
 
 export type CompanyActionState = {
   error?: string
@@ -15,7 +17,7 @@ export async function updateCompanyAction(
   _prev: CompanyActionState,
   formData: FormData
 ): Promise<CompanyActionState> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { error: "No company associated with account" }
 
@@ -35,35 +37,25 @@ export async function updateCompanyAction(
     return { error: parsed.error.issues[0].message }
   }
 
-  const supabase = await createClient()
-
-  // Handle logo upload if provided
-  const logoFile = formData.get("logo") as File | null
   let logo_url: string | undefined
 
+  const logoFile = formData.get("logo") as File | null
   if (logoFile && logoFile.size > 0) {
-    const ext = logoFile.name.split(".").pop()
-    const path = `${profile.company_id}/logo.${ext}`
-    const { error: uploadError } = await supabase.storage
-      .from("logos")
-      .upload(path, logoFile, { upsert: true })
-
-    if (uploadError)
-      return { error: `Logo upload failed: ${uploadError.message}` }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("logos").getPublicUrl(path)
-    logo_url = publicUrl
+    const { url, error: uploadError } = await uploadCompanyLogo(
+      profile.company_id,
+      logoFile
+    )
+    if (uploadError) return { error: `Logo upload failed: ${uploadError}` }
+    logo_url = url ?? undefined
   }
 
-  const { error } = await supabase
-    .from("companies")
-    .update({ ...parsed.data, ...(logo_url ? { logo_url } : {}) })
-    .eq("id", profile.company_id)
+  const { error } = await updateCompany(profile.company_id, {
+    ...parsed.data,
+    ...(logo_url ? { logo_url } : {}),
+  })
 
-  if (error) return { error: error.message }
+  if (error) return { error }
 
-  revalidatePath("/admin/settings")
+  revalidatePath(ROUTES.ADMIN_SETTINGS)
   return { success: true }
 }

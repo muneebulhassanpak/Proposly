@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+// eslint-disable-next-line no-restricted-imports -- useState here initializes QueryClient once per request (TanStack Query SSR requirement)
 import { useState, type ReactNode } from "react"
 
 export function Providers({ children }: { children: ReactNode }) {

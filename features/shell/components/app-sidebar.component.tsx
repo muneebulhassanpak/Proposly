@@ -19,6 +19,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import type { UserRole } from "@/lib/auth.utils"
+import { ROUTES } from "@/lib/constants/routes.constants"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { NAV_ITEMS } from "../constants/nav-items.constants"
 
 interface AppSidebarProps {
@@ -44,7 +46,8 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
   const pathname = usePathname()
   const items = NAV_ITEMS[profile.role]
   const isAdminSettingsActive =
-    pathname === "/admin/settings" || pathname.startsWith("/admin/settings/")
+    pathname === ROUTES.ADMIN_SETTINGS ||
+    pathname.startsWith(ROUTES.ADMIN_SETTINGS + "/")
 
   return (
     <Sidebar collapsible="icon">
@@ -72,7 +75,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
               tooltip="New Proposal"
               className="h-8 w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 data-[active=true]:bg-primary/90"
             >
-              <Link href="/quotes/new">
+              <Link href={ROUTES.NEW_QUOTE}>
                 <Plus size={14} strokeWidth={1.5} />
                 <span>New proposal</span>
               </Link>
@@ -88,7 +91,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
               {items.map(({ label, href, icon: Icon }) => {
                 const isActive =
                   pathname === href ||
-                  (href !== "/dashboard" && pathname.startsWith(href + "/"))
+                  (href !== ROUTES.DASHBOARD && pathname.startsWith(href + "/"))
                 return (
                   <SidebarMenuItem key={href}>
                     <SidebarMenuButton
@@ -109,7 +112,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
         </SidebarGroup>
 
         {/* Settings — pushed to bottom of content */}
-        {profile.role === "admin" && (
+        {profile.role === USER_ROLES.ADMIN && (
           <SidebarGroup className="mt-auto">
             <SidebarGroupContent>
               <SidebarMenu>
@@ -119,7 +122,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
                     isActive={isAdminSettingsActive}
                     tooltip="Company Settings"
                   >
-                    <Link href="/admin/settings">
+                    <Link href={ROUTES.ADMIN_SETTINGS}>
                       <Settings size={16} strokeWidth={1.5} />
                       <span>Company Settings</span>
                     </Link>

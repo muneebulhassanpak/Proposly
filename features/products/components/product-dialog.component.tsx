@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -21,11 +19,12 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { useCreateProduct, useUpdateProduct } from "../hooks/use-products.hook"
-import type { ProductFormData } from "../schemas/product.schema"
+import {
+  PRODUCT_UNITS,
+  type ProductUnit,
+} from "@/lib/constants/product.constants"
+import { useProductDialog } from "../hooks/use-product-dialog.hook"
 import type { Product } from "../products.types"
-
-const UNITS = ["hour", "page", "project", "item", "word", "custom"] as const
 
 interface ProductDialogProps {
   open: boolean
@@ -33,59 +32,15 @@ interface ProductDialogProps {
   product?: Product | null
 }
 
-const DEFAULT_FORM: ProductFormData = {
-  name: "",
-  description: null,
-  category: null,
-  unit: "item",
-  unit_price: 0,
-  cost_price: null,
-  is_active: true,
-}
-
 export function ProductDialog({
   open,
   onOpenChange,
   product,
 }: ProductDialogProps) {
-  const isEdit = !!product
-  const create = useCreateProduct()
-  const update = useUpdateProduct()
-  const isPending = create.isPending || update.isPending
-
-  const [form, setForm] = useState<ProductFormData>(() =>
-    product
-      ? {
-          name: product.name,
-          description: product.description,
-          category: product.category,
-          unit: (product.unit ?? "item") as ProductFormData["unit"],
-          unit_price: product.unit_price,
-          cost_price: product.cost_price,
-          is_active: product.is_active ?? true,
-        }
-      : DEFAULT_FORM
+  const { form, set, handleSubmit, isPending, isEdit } = useProductDialog(
+    product,
+    () => onOpenChange(false)
   )
-
-  function set<K extends keyof ProductFormData>(
-    key: K,
-    val: ProductFormData[K]
-  ) {
-    setForm((prev) => ({ ...prev, [key]: val }))
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const mutation = isEdit
-      ? update.mutate(
-          { productId: product!.id, data: form },
-          { onSuccess: (r) => r.success && onOpenChange(false) }
-        )
-      : create.mutate(form, {
-          onSuccess: (r) => r.success && onOpenChange(false),
-        })
-    void mutation
-  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -133,13 +88,13 @@ export function ProductDialog({
               <Label>Unit</Label>
               <Select
                 value={form.unit}
-                onValueChange={(v) => set("unit", v as ProductFormData["unit"])}
+                onValueChange={(v) => set("unit", v as ProductUnit)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {UNITS.map((u) => (
+                  {PRODUCT_UNITS.map((u) => (
                     <SelectItem key={u} value={u}>
                       {u.charAt(0).toUpperCase() + u.slice(1)}
                     </SelectItem>

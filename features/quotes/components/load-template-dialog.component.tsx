@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
 import { LayoutTemplate } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -13,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { getQuoteTemplatesAction } from "../actions/save-draft.action"
+import { useLoadTemplateDialog } from "../hooks/use-load-template-dialog.hook"
 import type { LineItemRow } from "../quotes.types"
 
 interface LoadTemplateDialogProps {
@@ -25,41 +23,19 @@ export function LoadTemplateDialog({
   hasItems,
   onLoad,
 }: LoadTemplateDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState<string | null>(null)
-  const [confirmClear, setConfirmClear] = useState(false)
-
-  const { data: templates = [], isLoading } = useQuery({
-    queryKey: ["quote-templates"],
-    queryFn: getQuoteTemplatesAction,
-    enabled: open,
-    staleTime: 60_000,
-  })
-
-  function handleLoad() {
-    if (hasItems && !confirmClear) {
-      setConfirmClear(true)
-      return
-    }
-    // Templates have no items yet (Sprint 09 builds templates)
-    // Just close for now — items will be empty
-    onLoad([])
-    setOpen(false)
-    setSelected(null)
-    setConfirmClear(false)
-  }
+  const {
+    open,
+    handleOpenChange,
+    selected,
+    setSelected,
+    confirmClear,
+    templates,
+    isLoading,
+    handleLoad,
+  } = useLoadTemplateDialog(hasItems, onLoad)
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v)
-        if (!v) {
-          setSelected(null)
-          setConfirmClear(false)
-        }
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <LayoutTemplate size={14} strokeWidth={1.5} />

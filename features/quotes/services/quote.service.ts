@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server.service"
+import { DEFAULT_PRODUCT_UNIT } from "@/lib/constants/product.constants"
+import { QUOTE_STATUS } from "../constants/quote.constants"
 import type { SaveDraftInput } from "../schemas/save-draft.schema"
 import type {
   SaveDraftResult,
@@ -102,13 +104,13 @@ export async function saveDraft(
       .from("quote_versions")
       .select("id")
       .eq("quote_id", input.quote_id)
-      .eq("status", "draft")
+      .eq("status", QUOTE_STATUS.DRAFT)
       .order("version_number", { ascending: false })
       .limit(1)
       .single()
     if (!version) return { success: false, error: "Draft version not found" }
 
-    await supabase
+    const { error: vUpdateErr } = await supabase
       .from("quote_versions")
       .update({
         subtotal,
@@ -119,27 +121,32 @@ export async function saveDraft(
         total,
       })
       .eq("id", version.id)
+    if (vUpdateErr) return { success: false, error: vUpdateErr.message }
 
-    await supabase
+    const { error: deleteErr } = await supabase
       .from("quote_line_items")
       .delete()
       .eq("version_id", version.id)
+    if (deleteErr) return { success: false, error: deleteErr.message }
 
     if (input.line_items.length > 0) {
-      await supabase.from("quote_line_items").insert(
-        input.line_items.map((item, i) => ({
-          version_id: version.id,
-          product_id: item.product_id,
-          name: item.name,
-          description: item.description || null,
-          unit_price: item.unit_price,
-          cost_price: item.cost_price,
-          quantity: item.quantity,
-          unit: item.unit || "item",
-          line_total: item.unit_price * item.quantity,
-          sort_order: i,
-        }))
-      )
+      const { error: insertErr } = await supabase
+        .from("quote_line_items")
+        .insert(
+          input.line_items.map((item, i) => ({
+            version_id: version.id,
+            product_id: item.product_id,
+            name: item.name,
+            description: item.description || null,
+            unit_price: item.unit_price,
+            cost_price: item.cost_price,
+            quantity: item.quantity,
+            unit: item.unit || DEFAULT_PRODUCT_UNIT,
+            line_total: item.unit_price * item.quantity,
+            sort_order: i,
+          }))
+        )
+      if (insertErr) return { success: false, error: insertErr.message }
     }
 
     return { success: true, quoteId: input.quote_id, versionId: version.id }
@@ -153,7 +160,7 @@ export async function saveDraft(
       client_id: input.client_id,
       created_by: user.id,
       title: input.title,
-      status: "draft",
+      status: QUOTE_STATUS.DRAFT,
       notes: input.notes || null,
       expires_at: input.expires_at,
     })
@@ -167,7 +174,7 @@ export async function saveDraft(
     .insert({
       quote_id: quote.id,
       version_number: 1,
-      status: "draft",
+      status: QUOTE_STATUS.DRAFT,
       subtotal,
       discount_percent: input.discount_percent,
       discount_amount: discountAmount,
@@ -185,7 +192,7 @@ export async function saveDraft(
     }
 
   if (input.line_items.length > 0) {
-    await supabase.from("quote_line_items").insert(
+    const { error: insertErr } = await supabase.from("quote_line_items").insert(
       input.line_items.map((item, i) => ({
         version_id: version.id,
         product_id: item.product_id,
@@ -194,11 +201,12 @@ export async function saveDraft(
         unit_price: item.unit_price,
         cost_price: item.cost_price,
         quantity: item.quantity,
-        unit: item.unit || "item",
+        unit: item.unit || DEFAULT_PRODUCT_UNIT,
         line_total: item.unit_price * item.quantity,
         sort_order: i,
       }))
     )
+    if (insertErr) return { success: false, error: insertErr.message }
   }
 
   return { success: true, quoteId: quote.id, versionId: version.id }
@@ -215,13 +223,13 @@ export async function getQuoteDraft(
     .eq("id", quoteId)
     .single()
 
-  if (!quote || quote.status !== "draft") return null
+  if (!quote || quote.status !== QUOTE_STATUS.DRAFT) return null
 
   const { data: version } = await supabase
     .from("quote_versions")
     .select("id, discount_percent, tax_percent")
     .eq("quote_id", quoteId)
-    .eq("status", "draft")
+    .eq("status", QUOTE_STATUS.DRAFT)
     .order("version_number", { ascending: false })
     .limit(1)
     .single()
@@ -252,7 +260,7 @@ export async function getQuoteDraft(
     unit_price: Number(li.unit_price),
     cost_price: li.cost_price != null ? Number(li.cost_price) : null,
     quantity: Number(li.quantity),
-    unit: li.unit ?? "item",
+    unit: li.unit ?? DEFAULT_PRODUCT_UNIT,
     sort_order: i,
   }))
 

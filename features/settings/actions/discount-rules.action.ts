@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache"
 
 import { requireRole } from "@/lib/auth.utils"
-import { createClient } from "@/lib/supabase/server.service"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
+import { ROUTES } from "@/lib/constants/routes.constants"
 import { discountRuleSchema } from "../schemas/discount-rules.schema"
+import { upsertDiscountRule } from "../services/discount-rules.service"
 
 export type DiscountRuleActionState = {
   error?: string
@@ -15,7 +17,7 @@ export async function upsertDiscountRuleAction(
   _prev: DiscountRuleActionState,
   formData: FormData
 ): Promise<DiscountRuleActionState> {
-  const profile = await requireRole("admin")
+  const profile = await requireRole(USER_ROLES.ADMIN)
   if (!profile.company_id)
     return { error: "No company associated with account" }
 
@@ -26,26 +28,13 @@ export async function upsertDiscountRuleAction(
     return { error: parsed.error.issues[0].message }
   }
 
-  const supabase = await createClient()
+  const { error } = await upsertDiscountRule(
+    profile.company_id,
+    parsed.data.threshold_percent
+  )
 
-  const { data: existing } = await supabase
-    .from("discount_rules")
-    .select("id")
-    .eq("company_id", profile.company_id)
-    .single()
+  if (error) return { error }
 
-  const { error } = existing
-    ? await supabase
-        .from("discount_rules")
-        .update({ threshold_percent: parsed.data.threshold_percent })
-        .eq("id", existing.id)
-    : await supabase.from("discount_rules").insert({
-        company_id: profile.company_id,
-        threshold_percent: parsed.data.threshold_percent,
-      })
-
-  if (error) return { error: error.message }
-
-  revalidatePath("/admin/discount-rules")
+  revalidatePath(ROUTES.ADMIN_DISCOUNT_RULES)
   return { success: true }
 }
