@@ -7,7 +7,6 @@ import {
   LayoutTemplate,
   Package,
   Percent,
-  Settings,
   Users,
 } from "lucide-react"
 
@@ -32,7 +31,6 @@ export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Quotes", href: "/quotes", icon: FileText },
   ],
   admin: [
-    { label: "Company Settings", href: "/admin/settings", icon: Settings },
     { label: "Product Catalog", href: "/admin/catalog", icon: Package },
     { label: "Discount Rules", href: "/admin/discount-rules", icon: Percent },
     { label: "Users", href: "/admin/users", icon: Users },

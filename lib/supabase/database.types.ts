@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
@@ -167,39 +165,39 @@ export type Database = {
           address: string | null
           brand_color: string | null
           created_at: string | null
-          currency: string | null
+          default_currency: string
+          default_tax_percent: number
           email: string | null
           id: string
           logo_url: string | null
           name: string
           phone: string | null
-          tax_percent: number | null
           website: string | null
         }
         Insert: {
           address?: string | null
           brand_color?: string | null
           created_at?: string | null
-          currency?: string | null
+          default_currency?: string
+          default_tax_percent?: number
           email?: string | null
           id?: string
           logo_url?: string | null
           name: string
           phone?: string | null
-          tax_percent?: number | null
           website?: string | null
         }
         Update: {
           address?: string | null
           brand_color?: string | null
           created_at?: string | null
-          currency?: string | null
+          default_currency?: string
+          default_tax_percent?: number
           email?: string | null
           id?: string
           logo_url?: string | null
           name?: string
           phone?: string | null
-          tax_percent?: number | null
           website?: string | null
         }
         Relationships: []
@@ -426,6 +424,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          is_active: boolean
           role: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
@@ -435,6 +434,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          is_active?: boolean
           role?: Database["public"]["Enums"]["user_role"]
         }
         Update: {
@@ -444,6 +444,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          is_active?: boolean
           role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: [
@@ -741,7 +742,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_my_company_id: { Args: never; Returns: string }
     }
     Enums: {
       approval_status: "pending" | "approved" | "rejected"
@@ -765,7 +766,6 @@ export type Database = {
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
