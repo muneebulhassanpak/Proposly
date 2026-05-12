@@ -1,6 +1,7 @@
 "use client"
 
-import { Bell, Menu } from "lucide-react"
+import { Bell, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -11,16 +12,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import { logoutAction } from "@/features/auth/actions/auth.action"
 import type { Profile } from "@/lib/auth.utils"
-import { AppSidebar } from "./app-sidebar.component"
 
 interface TopNavProps {
   profile: Pick<Profile, "full_name" | "email" | "avatar_url" | "role">
 }
 
 export function TopNav({ profile }: TopNavProps) {
+  const { resolvedTheme, setTheme } = useTheme()
   const initials =
     profile.full_name
       ?.split(" ")
@@ -31,30 +32,7 @@ export function TopNav({ profile }: TopNavProps) {
 
   return (
     <header className="flex h-14 shrink-0 items-center border-b border-hairline bg-surface px-4">
-      {/* Brand */}
-      <span className="font-display text-xl text-ink italic">Proposly</span>
-
-      {/* Mobile sidebar trigger */}
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="ml-3 lg:hidden"
-            aria-label="Open navigation"
-          >
-            <Menu size={20} strokeWidth={1.5} />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-60 p-0">
-          <div className="flex h-14 items-center border-b border-hairline px-4">
-            <span className="font-display text-xl text-ink italic">
-              Proposly
-            </span>
-          </div>
-          <AppSidebar role={profile.role} />
-        </SheetContent>
-      </Sheet>
+      <SidebarTrigger size="icon" />
 
       <div className="flex-1" />
 
@@ -67,6 +45,21 @@ export function TopNav({ profile }: TopNavProps) {
         className="mr-1"
       >
         <Bell size={18} strokeWidth={1.5} />
+      </Button>
+
+      {/* Theme toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Toggle theme"
+        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+        className="mr-1"
+      >
+        {resolvedTheme === "dark" ? (
+          <Sun size={18} strokeWidth={1.5} />
+        ) : (
+          <Moon size={18} strokeWidth={1.5} />
+        )}
       </Button>
 
       {/* User menu */}

@@ -1,7 +1,9 @@
 "use client"
 
-import { useActionState } from "react"
+import Image from "next/image"
 import Link from "next/link"
+import { useActionState, useEffect, useState } from "react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,11 +12,23 @@ import { loginAction } from "../actions/auth.action"
 
 export function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginAction, null)
+  const [email, setEmail] = useState("")
+
+  useEffect(() => {
+    if (state?.error) toast.error(state.error)
+  }, [state])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-10 text-center">
+        <div className="mb-6 flex items-center justify-center gap-2.5">
+          <Image
+            src="/proposly-mark.svg"
+            alt="Proposly"
+            width={36}
+            height={36}
+            priority
+          />
           <span className="font-display text-3xl text-ink italic">
             Proposly
           </span>
@@ -24,12 +38,6 @@ export function LoginPage() {
           <h1 className="mb-6 text-lg font-semibold text-ink">Sign in</h1>
 
           <form action={formAction} className="space-y-4">
-            {state?.error && (
-              <p className="rounded-sm bg-crimson-soft px-3 py-2 text-sm text-crimson">
-                {state.error}
-              </p>
-            )}
-
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -39,6 +47,8 @@ export function LoginPage() {
                 placeholder="you@agency.com"
                 required
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -56,6 +66,7 @@ export function LoginPage() {
                 id="password"
                 name="password"
                 type="password"
+                placeholder="••••••••"
                 required
                 autoComplete="current-password"
               />

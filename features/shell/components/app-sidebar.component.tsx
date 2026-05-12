@@ -1,9 +1,20 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import { cn } from "@/lib/utils"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from "@/components/ui/sidebar"
 import type { UserRole } from "@/lib/auth.utils"
 import { NAV_ITEMS } from "../constants/nav-items.constants"
 
@@ -16,29 +27,49 @@ export function AppSidebar({ role }: AppSidebarProps) {
   const items = NAV_ITEMS[role]
 
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-hairline bg-surface lg:flex lg:flex-col">
-      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3">
-        {items.map(({ label, href, icon: Icon }) => {
-          const isActive =
-            pathname === href ||
-            (href !== "/dashboard" && pathname.startsWith(href + "/"))
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-3 rounded-sm px-3 py-2 text-sm transition-colors",
-                isActive
-                  ? "bg-paper font-medium text-ink"
-                  : "text-ink-mute hover:bg-paper hover:text-ink"
-              )}
-            >
-              <Icon size={16} strokeWidth={1.5} />
-              {label}
-            </Link>
-          )
-        })}
-      </nav>
-    </aside>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="p-3">
+        <div className="flex items-center gap-2.5 px-1 py-1">
+          <Image
+            src="/proposly-mark.svg"
+            alt="Proposly"
+            width={28}
+            height={28}
+            className="shrink-0"
+          />
+          <span className="overflow-hidden font-display text-lg text-ink italic transition-[max-width,opacity] duration-200 group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0">
+            Proposly
+          </span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map(({ label, href, icon: Icon }) => {
+                const isActive =
+                  pathname === href ||
+                  (href !== "/dashboard" && pathname.startsWith(href + "/"))
+                return (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      tooltip={label}
+                    >
+                      <Link href={href}>
+                        <Icon size={16} strokeWidth={1.5} />
+                        <span>{label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarRail />
+    </Sidebar>
   )
 }
