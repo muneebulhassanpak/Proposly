@@ -14,15 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ROLE_LABELS } from "@/lib/constants/roles.constants"
 import { EditRoleDialog } from "./edit-role-dialog.component"
+import { RoleBadge } from "./role-badge.component"
 import type { UserProfile, UserRole } from "../settings.types"
-
-function RoleBadge({ role }: { role: UserRole }) {
-  const variant =
-    role === "admin" ? "cobalt" : role === "manager" ? "amber" : "slate"
-  return <Badge variant={variant}>{ROLE_LABELS[role]}</Badge>
-}
 
 interface UsersColumnParams {
   currentUserId: string | null | undefined
