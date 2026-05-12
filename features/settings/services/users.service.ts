@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin.service"
 import { createClient as createBrowserClient } from "@/lib/supabase/browser.service"
 import { createClient as createServerClient } from "@/lib/supabase/server.service"
+import type { CreateUserFormData } from "../schemas/user.schema"
 import type { UserProfile, UserRole } from "../settings.types"
 
 export async function getUsersClient(): Promise<UserProfile[]> {
@@ -34,7 +35,7 @@ export async function upsertUserProfile(
   data: {
     email: string
     full_name: string
-    role: "manager" | "rep"
+    role: CreateUserFormData["role"]
     company_id: string
   }
 ): Promise<{ error: string | null }> {

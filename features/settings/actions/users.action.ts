@@ -3,6 +3,7 @@
 import { requireRole } from "@/lib/auth.utils"
 import { createAdminClient } from "@/lib/supabase/admin.service"
 import { createUserSchema, editRoleSchema } from "../schemas/user.schema"
+import type { CreateUserFormData } from "../schemas/user.schema"
 import type { UserRole } from "../settings.types"
 import {
   toggleUserActive,
@@ -16,7 +17,7 @@ export async function createUserAction(
   name: string,
   email: string,
   password: string,
-  role: "manager" | "rep"
+  role: CreateUserFormData["role"]
 ): Promise<UserActionResult> {
   const profile = await requireRole("admin")
   if (!profile.company_id)

@@ -13,6 +13,7 @@ import {
   updateUserRoleAction,
 } from "../actions/users.action"
 import { getUsersClient } from "../services/users.service"
+import type { CreateUserFormData } from "../schemas/user.schema"
 import type { UserRole } from "../settings.types"
 
 export function useUserFilters() {
@@ -79,7 +80,7 @@ export function useCreateUser() {
       name: string
       email: string
       password: string
-      role: "manager" | "rep"
+      role: CreateUserFormData["role"]
     }) => createUserAction(name, email, password, role),
     onSuccess: (result) => {
       if (!result.success) {
