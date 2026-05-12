@@ -60,6 +60,17 @@ export function TopNav({ profile }: TopNavProps) {
 
       <div className="flex-1" />
 
+      {/* Notification bell — wired in Sprint 08 */}
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Notifications"
+        disabled
+        className="mr-1"
+      >
+        <Bell size={18} strokeWidth={1.5} />
+      </Button>
+
       {/* Theme toggle */}
       <Button
         variant="ghost"
@@ -73,17 +84,6 @@ export function TopNav({ profile }: TopNavProps) {
         ) : (
           <Moon size={18} strokeWidth={1.5} />
         )}
-      </Button>
-
-      {/* Notification bell — wired in Sprint 08 */}
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Notifications"
-        disabled
-        className="mr-1"
-      >
-        <Bell size={18} strokeWidth={1.5} />
       </Button>
 
       {/* User menu */}
