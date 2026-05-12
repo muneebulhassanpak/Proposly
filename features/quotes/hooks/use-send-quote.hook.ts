@@ -21,7 +21,7 @@ export function useSendQuote(quoteId: string) {
         queryClient.invalidateQueries({ queryKey: ["dashboard-quotes"] })
         setDialogOpen(false)
         toast.success("Proposal sent.")
-        router.push(ROUTES.QUOTE(quoteId))
+        router.push(ROUTES.DASHBOARD)
       } else {
         toast.error(result.error)
       }
