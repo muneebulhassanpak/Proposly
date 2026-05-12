@@ -1,0 +1,107 @@
+"use client"
+
+import { Bell, Menu } from "lucide-react"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { logoutAction } from "@/features/auth/actions/auth.action"
+import type { Profile } from "@/lib/auth.utils"
+import { AppSidebar } from "./app-sidebar.component"
+
+interface TopNavProps {
+  profile: Pick<Profile, "full_name" | "email" | "avatar_url" | "role">
+}
+
+export function TopNav({ profile }: TopNavProps) {
+  const initials =
+    profile.full_name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) ?? "?"
+
+  return (
+    <header className="flex h-14 shrink-0 items-center border-b border-hairline bg-surface px-4">
+      {/* Brand */}
+      <span className="font-display text-xl text-ink italic">Proposly</span>
+
+      {/* Mobile sidebar trigger */}
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-3 lg:hidden"
+            aria-label="Open navigation"
+          >
+            <Menu size={20} strokeWidth={1.5} />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-60 p-0">
+          <div className="flex h-14 items-center border-b border-hairline px-4">
+            <span className="font-display text-xl text-ink italic">
+              Proposly
+            </span>
+          </div>
+          <AppSidebar role={profile.role} />
+        </SheetContent>
+      </Sheet>
+
+      <div className="flex-1" />
+
+      {/* Notification bell — wired in Sprint 08 */}
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Notifications"
+        disabled
+        className="mr-1"
+      >
+        <Bell size={18} strokeWidth={1.5} />
+      </Button>
+
+      {/* User menu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="h-8 w-8 rounded-full p-0"
+            aria-label="User menu"
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={profile.avatar_url ?? undefined} />
+              <AvatarFallback className="text-xs font-medium">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <div className="px-2 py-1.5">
+            <p className="text-sm font-medium text-ink">
+              {profile.full_name ?? "User"}
+            </p>
+            <p className="text-xs text-ink-mute">{profile.email}</p>
+          </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <form action={logoutAction} className="w-full">
+              <button type="submit" className="w-full cursor-pointer text-left">
+                Log out
+              </button>
+            </form>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </header>
+  )
+}
