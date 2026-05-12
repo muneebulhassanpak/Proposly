@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { requireAuth } from "@/lib/auth.utils"
 import { ROUTES } from "@/lib/constants/routes.constants"
+import { createClientSchema } from "../schemas/create-client.schema"
 import { saveDraftSchema } from "../schemas/save-draft.schema"
 import { saveDraft } from "../services/quote.service"
 
@@ -28,21 +29,12 @@ export async function saveDraftAction(raw: unknown) {
 export async function createClientAction(raw: unknown) {
   await requireAuth()
 
+  const parsed = createClientSchema.safeParse(raw)
+  if (!parsed.success)
+    return { success: false as const, error: parsed.error.issues[0].message }
+
   const { createNewClient } = await import("../services/quote.service")
-
-  if (!raw || typeof raw !== "object")
-    return { success: false as const, error: "Invalid input" }
-  const { name, email, company_name, phone } = raw as Record<string, unknown>
-  if (!name || typeof name !== "string")
-    return { success: false as const, error: "Name is required" }
-
-  return createNewClient({
-    name,
-    email: typeof email === "string" && email ? email : null,
-    company_name:
-      typeof company_name === "string" && company_name ? company_name : null,
-    phone: typeof phone === "string" && phone ? phone : null,
-  })
+  return createNewClient(parsed.data)
 }
 
 export async function searchClientsAction(query: string) {
