@@ -114,7 +114,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
       </SidebarContent>
 
       {/* Profile footer */}
-      <SidebarFooter className="border-t border-hairline p-3">
+      <SidebarFooter className="border-t border-hairline p-3 group-data-[collapsible=icon]:px-0">
         <div className="flex items-center gap-2.5 px-1 py-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] bg-accent text-xs font-semibold text-white">
             {getInitials(profile.full_name)}
