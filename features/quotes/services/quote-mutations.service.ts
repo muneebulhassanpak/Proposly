@@ -3,6 +3,9 @@ import { Resend } from "resend"
 import { createClient } from "@/lib/supabase/server.service"
 import { QUOTE_STATUS, VERSION_STATUS } from "../constants/quote.constants"
 
+const RESEND_FROM =
+  process.env.RESEND_FROM_EMAIL ?? "Proposly <onboarding@resend.dev>"
+
 export async function sendQuote(
   quoteId: string,
   actorId: string
@@ -38,20 +41,7 @@ export async function sendQuote(
 
   if (!version) return { success: false, error: "No draft version found" }
 
-  // Promote version to active
-  const { error: vErr } = await supabase
-    .from("quote_versions")
-    .update({ status: VERSION_STATUS.ACTIVE })
-    .eq("id", version.id)
-  if (vErr) return { success: false, error: vErr.message }
-
-  // Update quote status to sent
-  const { error: qErr } = await supabase
-    .from("quotes")
-    .update({ status: QUOTE_STATUS.SENT, updated_at: new Date().toISOString() })
-    .eq("id", quoteId)
-  if (qErr) return { success: false, error: qErr.message }
-
+  // Build email content before making any state changes
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
   const publicLink = `${siteUrl}/p/${quote.public_token}`
   const companyName =
@@ -59,10 +49,11 @@ export async function sendQuote(
   const clientName =
     (quote.clients as { name?: string } | null)?.name ?? "there"
 
-  // Send email via Resend
+  // Send email first — before updating status so a failure doesn't leave
+  // the quote in an inconsistent state
   const resend = new Resend(process.env.RESEND_API_KEY)
   const { error: emailErr } = await resend.emails.send({
-    from: "proposals@proposly.app",
+    from: RESEND_FROM,
     to: clientEmail,
     subject: `${companyName}: ${quote.title}`,
     html: `
@@ -79,25 +70,36 @@ export async function sendQuote(
   if (emailErr)
     return { success: false, error: `Email failed: ${emailErr.message}` }
 
+  // Email succeeded — now promote version and update status
+  const { error: vErr } = await supabase
+    .from("quote_versions")
+    .update({ status: VERSION_STATUS.ACTIVE })
+    .eq("id", version.id)
+  if (vErr) return { success: false, error: vErr.message }
+
+  const { error: qErr } = await supabase
+    .from("quotes")
+    .update({ status: QUOTE_STATUS.SENT, updated_at: new Date().toISOString() })
+    .eq("id", quoteId)
+  if (qErr) return { success: false, error: qErr.message }
+
   // Log to email_log
-  const { error: logErr } = await supabase.from("email_log").insert({
+  await supabase.from("email_log").insert({
     quote_id: quoteId,
     sent_by: actorId,
     recipient: clientEmail,
     subject: `${companyName}: ${quote.title}`,
     sent_at: new Date().toISOString(),
   })
-  if (logErr) return { success: false, error: logErr.message }
 
   // Log activity
-  const { error: actErr } = await supabase.from("activity_log").insert({
+  await supabase.from("activity_log").insert({
     quote_id: quoteId,
     version_id: version.id,
     actor_id: actorId,
     event: "quote_sent",
     meta: { recipient: clientEmail },
   })
-  if (actErr) return { success: false, error: actErr.message }
 
   return { success: true }
 }
