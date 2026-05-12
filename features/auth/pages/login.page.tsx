@@ -2,21 +2,14 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useActionState, useEffect, useState } from "react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { loginAction } from "../actions/auth.action"
+import { useLogin } from "../hooks/use-login.hook"
 
 export function LoginPage() {
-  const [state, formAction, isPending] = useActionState(loginAction, null)
-  const [email, setEmail] = useState("")
-
-  useEffect(() => {
-    if (state?.error) toast.error(state.error)
-  }, [state])
+  const { formAction, isPending, email, setEmail } = useLogin()
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">

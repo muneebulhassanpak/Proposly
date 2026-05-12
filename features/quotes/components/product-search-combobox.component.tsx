@@ -1,7 +1,5 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
 import { Search } from "lucide-react"
 
 import {
@@ -17,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { searchProductsAction } from "../actions/save-draft.action"
+import { useProductSearch } from "../hooks/use-product-search.hook"
 import type { ProductSearchResult } from "../quotes.types"
 
 interface ProductSearchComboboxProps {
@@ -27,24 +25,7 @@ interface ProductSearchComboboxProps {
 export function ProductSearchCombobox({
   onSelect,
 }: ProductSearchComboboxProps) {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState("")
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [debouncedSearch, setDebouncedSearch] = useState("")
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => setDebouncedSearch(search), 300)
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [search])
-
-  const { data: products = [] } = useQuery({
-    queryKey: ["products-search", debouncedSearch],
-    queryFn: () => searchProductsAction(debouncedSearch),
-    staleTime: 30_000,
-  })
+  const { open, setOpen, search, setSearch, products } = useProductSearch()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

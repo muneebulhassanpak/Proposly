@@ -1,18 +1,14 @@
 "use client"
 
-import { useActionState } from "react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { forgotPasswordAction } from "../actions/auth.action"
+import { useForgotPassword } from "../hooks/use-forgot-password.hook"
 
 export function ForgotPasswordPage() {
-  const [state, formAction, isPending] = useActionState(
-    forgotPasswordAction,
-    null
-  )
+  const { state, formAction, isPending } = useForgotPassword()
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">

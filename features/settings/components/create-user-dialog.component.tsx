@@ -1,8 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { Controller, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller } from "react-hook-form"
 import { Plus, Shuffle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -23,62 +21,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useCreateUser } from "../hooks/use-users.hook"
-import {
-  createUserSchema,
-  type CreateUserFormData,
-} from "../schemas/user.schema"
+import { useCreateUserDialog } from "../hooks/use-create-user-dialog.hook"
 
 export function CreateUserDialog() {
-  const [open, setOpen] = useState(false)
-  const create = useCreateUser()
-
   const {
+    open,
+    handleOpenChange,
     register,
     handleSubmit,
     control,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<CreateUserFormData>({
-    resolver: zodResolver(createUserSchema),
-    defaultValues: { name: "", email: "", password: "", role: "rep" },
-    mode: "onChange",
-  })
-
-  function onSubmit(data: CreateUserFormData) {
-    create.mutate(data, {
-      onSuccess: (result) => {
-        if (result.success) {
-          setOpen(false)
-          reset()
-        }
-      },
-    })
-  }
-
-  function generatePassword() {
-    const chars =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
-    const arr = new Uint8Array(16)
-    crypto.getRandomValues(arr)
-    setValue(
-      "password",
-      Array.from(arr)
-        .map((b) => chars[b % chars.length])
-        .join(""),
-      { shouldValidate: true }
-    )
-  }
+    onSubmit,
+    generatePassword,
+    errors,
+    isPending,
+  } = useCreateUserDialog()
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o)
-        if (!o) reset()
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button size="sm">
           <Plus size={14} strokeWidth={1.5} />
@@ -159,7 +118,7 @@ export function CreateUserDialog() {
             </div>
           </div>
           <DialogFooter showCloseButton>
-            <Button type="submit" loading={create.isPending}>
+            <Button type="submit" loading={isPending}>
               Create user
             </Button>
           </DialogFooter>

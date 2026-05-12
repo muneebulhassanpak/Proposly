@@ -1,13 +1,9 @@
 "use client"
 
-import { useEffect } from "react"
-import { useActionState } from "react"
-import { toast } from "sonner"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { upsertDiscountRuleAction } from "../actions/discount-rules.action"
+import { useDiscountRule } from "../hooks/use-discount-rule.hook"
 import type { DiscountRule } from "../settings.types"
 
 interface DiscountRulesPageProps {
@@ -15,15 +11,7 @@ interface DiscountRulesPageProps {
 }
 
 export function DiscountRulesPage({ rule }: DiscountRulesPageProps) {
-  const [state, formAction, isPending] = useActionState(
-    upsertDiscountRuleAction,
-    null
-  )
-
-  useEffect(() => {
-    if (state?.success) toast.success("Discount rule saved")
-    if (state?.error) toast.error(state.error)
-  }, [state])
+  const { formAction, isPending } = useDiscountRule()
 
   return (
     <div>

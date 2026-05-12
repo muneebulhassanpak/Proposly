@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-
 import { Button } from "@/components/ui/button"
 import {
   DialogContent,
@@ -17,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useUpdateUserRole } from "../hooks/use-users.hook"
+import { useEditRoleDialog } from "../hooks/use-edit-role-dialog.hook"
 import type { UserProfile, UserRole } from "../settings.types"
 
 interface EditRoleDialogProps {
@@ -26,15 +24,10 @@ interface EditRoleDialogProps {
 }
 
 export function EditRoleDialog({ user, onClose }: EditRoleDialogProps) {
-  const [role, setRole] = useState<UserRole>(user.role)
-  const updateRole = useUpdateUserRole()
-
-  function handleSave() {
-    updateRole.mutate(
-      { userId: user.id, role },
-      { onSuccess: (r) => r.success && onClose() }
-    )
-  }
+  const { role, setRole, handleSave, isPending } = useEditRoleDialog(
+    user,
+    onClose
+  )
 
   return (
     <DialogContent className="sm:max-w-xs">
@@ -57,7 +50,7 @@ export function EditRoleDialog({ user, onClose }: EditRoleDialogProps) {
         </div>
       </div>
       <DialogFooter showCloseButton>
-        <Button onClick={handleSave} loading={updateRole.isPending}>
+        <Button onClick={handleSave} loading={isPending}>
           Save
         </Button>
       </DialogFooter>
