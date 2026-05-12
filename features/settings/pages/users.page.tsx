@@ -215,17 +215,20 @@ export function UsersPage() {
   const [editUser, setEditUser] = useState<UserProfile | null>(null)
   const [sorting, setSorting] = useState<SortingState>([])
   const [search, setSearch] = useState("")
+  const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all")
 
   const filtered = useMemo(() => {
     if (!users) return []
-    if (!search) return users
-    const q = search.toLowerCase()
-    return users.filter(
-      (u) =>
+    return users.filter((u) => {
+      const q = search.toLowerCase()
+      const matchSearch =
+        !search ||
         (u.full_name ?? "").toLowerCase().includes(q) ||
         (u.email ?? "").toLowerCase().includes(q)
-    )
-  }, [users, search])
+      const matchRole = roleFilter === "all" || u.role === roleFilter
+      return matchSearch && matchRole
+    })
+  }, [users, search, roleFilter])
 
   const columns = useMemo<ColumnDef<UserProfile>[]>(
     () => [
@@ -359,13 +362,27 @@ export function UsersPage() {
         <InviteDialog />
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 flex items-center gap-3">
         <Input
           placeholder="Search by name or email…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-xs"
         />
+        <Select
+          value={roleFilter}
+          onValueChange={(v) => setRoleFilter(v as UserRole | "all")}
+        >
+          <SelectTrigger className="w-36">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All roles</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="manager">Manager</SelectItem>
+            <SelectItem value="rep">Rep</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="rounded-lg border border-hairline bg-surface">
