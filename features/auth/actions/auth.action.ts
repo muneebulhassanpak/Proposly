@@ -52,5 +52,3 @@ export async function forgotPasswordAction(
 
   return { success: true }
 }
-
-export { logoutAction } from "@/lib/actions/auth.action"
