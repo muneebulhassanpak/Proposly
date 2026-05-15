@@ -13,5 +13,6 @@ export const ROUTES = {
   ADMIN_DISCOUNT_RULES: "/admin/discount-rules",
   ADMIN_USERS: "/admin/users",
   MANAGER_APPROVALS: "/manager/approvals",
+  MANAGER_APPROVAL_DETAIL: (id: string) => `/manager/approvals/${id}`,
   MANAGER_ANALYTICS: "/manager/analytics",
 } as const

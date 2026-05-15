@@ -55,6 +55,8 @@ export function QuoteBuilderPage({
     exceedsThreshold,
     addProductItem,
     addCustomItem,
+    sendForApproval,
+    isSendingForApproval,
   } = useQuoteBuilder({
     quoteId,
     initial,
@@ -385,7 +387,9 @@ export function QuoteBuilderPage({
               type="button"
               variant="outline"
               className="w-full"
-              disabled={!quoteId}
+              loading={isSendingForApproval}
+              disabled={lineItems.length === 0}
+              onClick={sendForApproval}
             >
               Send for Approval
             </Button>

@@ -1,5 +1,6 @@
 "use server"
 
+import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { requireAuth } from "@/lib/auth.utils"
 import { ROUTES } from "@/lib/constants/routes.constants"
@@ -53,4 +54,22 @@ export async function getQuoteTemplatesAction() {
   await requireAuth()
   const { getQuoteTemplates } = await import("../services/quote.service")
   return getQuoteTemplates()
+}
+
+const requestApprovalInputSchema = z.object({
+  quoteId: z.string().uuid(),
+  versionId: z.string().uuid(),
+})
+
+export async function requestApprovalAction(raw: unknown) {
+  const profile = await requireAuth()
+  const parsed = requestApprovalInputSchema.safeParse(raw)
+  if (!parsed.success)
+    return {
+      success: false as const,
+      error: parsed.error.issues[0]?.message ?? "Invalid input",
+    }
+  const { requestApproval } =
+    await import("@/features/approvals/services/approval.service")
+  return requestApproval(parsed.data, profile.id)
 }

@@ -9,7 +9,10 @@ import { toast } from "sonner"
 
 import { ROUTES } from "@/lib/constants/routes.constants"
 import { DEFAULT_PRODUCT_UNIT } from "@/lib/constants/product.constants"
-import { saveDraftAction } from "../actions/save-draft.action"
+import {
+  saveDraftAction,
+  requestApprovalAction,
+} from "../actions/save-draft.action"
 import {
   quoteBuilderSchema,
   type QuoteBuilderFormData,
@@ -112,6 +115,51 @@ export function useQuoteBuilder({
 
   const onSubmit = handleSubmit((data) => saveDraft.mutate(data))
 
+  const approvalMutation = useMutation({
+    mutationFn: async (data: QuoteBuilderFormData) => {
+      // Save draft first to get the latest versionId
+      const saveResult = await saveDraftAction({
+        quote_id: quoteId,
+        title: data.title,
+        client_id: data.client_id,
+        expires_at: data.expires_at ? data.expires_at.toISOString() : null,
+        notes: data.notes,
+        line_items: data.line_items.map((item, i) => ({
+          product_id: item.product_id,
+          name: item.name,
+          description: item.description,
+          unit_price: item.unit_price,
+          cost_price: item.cost_price,
+          quantity: item.quantity,
+          unit: item.unit,
+          sort_order: i,
+        })),
+        discount_percent: data.discount_percent,
+        tax_percent: data.tax_percent,
+      })
+      if (!saveResult.success) return saveResult
+
+      return requestApprovalAction({
+        quoteId: saveResult.quoteId,
+        versionId: saveResult.versionId,
+      })
+    },
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+        queryClient.invalidateQueries({ queryKey: ["dashboard-quotes"] })
+        toast.success("Sent for approval.")
+        if (quoteId) router.push(ROUTES.QUOTE(quoteId))
+      } else {
+        toast.error(result.error)
+      }
+    },
+  })
+
+  function sendForApproval() {
+    handleSubmit((data) => approvalMutation.mutate(data))()
+  }
+
   function addProductItem(product: ProductSearchResult) {
     const current = getValues("line_items")
     const existing = current.findIndex((i) => i.product_id === product.id)
@@ -176,5 +224,7 @@ export function useQuoteBuilder({
     exceedsThreshold,
     addProductItem,
     addCustomItem,
+    sendForApproval,
+    isSendingForApproval: approvalMutation.isPending,
   }
 }
