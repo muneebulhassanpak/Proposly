@@ -8,6 +8,6 @@ export default async function ManagerLayout({
 }: {
   children: ReactNode
 }) {
-  await requireRole(USER_ROLES.MANAGER)
+  await requireRole([USER_ROLES.MANAGER, USER_ROLES.ADMIN])
   return <>{children}</>
 }

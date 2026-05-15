@@ -1,6 +1,7 @@
 "use client"
 
-import { Bell, Moon, Sun } from "lucide-react"
+import type { ReactNode } from "react"
+import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -13,14 +14,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { logoutAction } from "@/features/auth/actions/auth.action"
+import { logoutAction } from "@/lib/actions/auth.action"
 import type { Profile } from "@/lib/auth.utils"
 
 interface TopNavProps {
   profile: Pick<Profile, "full_name" | "email" | "avatar_url" | "role">
+  notificationSlot?: ReactNode
 }
 
-export function TopNav({ profile }: TopNavProps) {
+export function TopNav({ profile, notificationSlot }: TopNavProps) {
   const { resolvedTheme, setTheme } = useTheme()
   const initials =
     profile.full_name
@@ -36,16 +38,7 @@ export function TopNav({ profile }: TopNavProps) {
 
       <div className="flex-1" />
 
-      {/* Notification bell — wired in Sprint 08 */}
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Notifications"
-        disabled
-        className="mr-1"
-      >
-        <Bell size={18} strokeWidth={1.5} />
-      </Button>
+      {notificationSlot}
 
       {/* Theme toggle */}
       <Button

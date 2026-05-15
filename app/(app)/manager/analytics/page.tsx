@@ -1,8 +1,8 @@
-export default function AnalyticsPage() {
-  return (
-    <div>
-      <h1 className="text-xl font-semibold text-ink">Analytics</h1>
-      <p className="mt-1 text-sm text-ink-mute">Coming in Sprint 8.</p>
-    </div>
-  )
+import { requireRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
+import { AnalyticsPage } from "@/features/analytics/pages/analytics.page"
+
+export default async function AnalyticsRoute() {
+  const profile = await requireRole([USER_ROLES.MANAGER, USER_ROLES.ADMIN])
+  return <AnalyticsPage companyId={profile.company_id!} />
 }

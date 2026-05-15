@@ -53,8 +53,4 @@ export async function forgotPasswordAction(
   return { success: true }
 }
 
-export async function logoutAction() {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
-  redirect(ROUTES.LOGIN)
-}
+export { logoutAction } from "@/lib/actions/auth.action"
