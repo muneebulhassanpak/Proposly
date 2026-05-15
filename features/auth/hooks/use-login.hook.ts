@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -9,6 +10,9 @@ import { loginAction } from "../actions/auth.action"
 import { loginSchema, type LoginFormData } from "../schemas/auth.schema"
 
 export function useLogin() {
+  const searchParams = useSearchParams()
+  const deactivated = searchParams.get("reason") === "deactivated"
+
   const [showPassword, setShowPassword] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -44,5 +48,6 @@ export function useLogin() {
     togglePassword: () => setShowPassword((v) => !v),
     honeypot,
     setHoneypot,
+    deactivated,
   }
 }

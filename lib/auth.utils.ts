@@ -26,6 +26,13 @@ export async function getProfile(): Promise<Profile | null> {
 export async function requireAuth(): Promise<Profile> {
   const profile = await getProfile()
   if (!profile) redirect(ROUTES.LOGIN)
+
+  if (profile.is_active === false) {
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+    redirect(ROUTES.LOGIN + "?reason=deactivated")
+  }
+
   return profile
 }
 
