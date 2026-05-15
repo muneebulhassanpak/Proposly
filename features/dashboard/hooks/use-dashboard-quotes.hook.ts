@@ -9,7 +9,7 @@ import {
   getDashboardSummary,
 } from "../services/dashboard.service"
 
-const PAGE_SIZE = 20
+const DEFAULT_PAGE_SIZE = 10
 
 export function useDashboardQuotes(userId: string) {
   const [search, setSearch] = useState("")
@@ -18,6 +18,7 @@ export function useDashboardQuotes(userId: string) {
     { id: "updatedAt", desc: true },
   ])
   const [pageIndex, setPageIndex] = useState(0)
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
   const sortBy = sorting[0]?.id ?? "updatedAt"
   const sortDesc = sorting[0]?.desc ?? true
@@ -36,6 +37,7 @@ export function useDashboardQuotes(userId: string) {
       sortBy,
       sortDesc,
       pageIndex,
+      pageSize,
     ],
     queryFn: () =>
       getDashboardQuotes({
@@ -45,13 +47,13 @@ export function useDashboardQuotes(userId: string) {
         sortBy,
         sortDesc,
         page: pageIndex,
-        pageSize: PAGE_SIZE,
+        pageSize,
       }),
   })
 
   const quotes = quotesQuery.data?.quotes ?? []
   const totalCount = quotesQuery.data?.totalCount ?? 0
-  const pageCount = Math.ceil(totalCount / PAGE_SIZE)
+  const pageCount = Math.ceil(totalCount / pageSize)
 
   return {
     summary: summaryQuery.data,
@@ -79,6 +81,10 @@ export function useDashboardQuotes(userId: string) {
     },
     pageIndex,
     setPageIndex,
-    pageSize: PAGE_SIZE,
+    pageSize,
+    setPageSize: (size: number) => {
+      setPageSize(size)
+      setPageIndex(0)
+    },
   }
 }

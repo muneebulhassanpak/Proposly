@@ -2,6 +2,15 @@ import type { Table } from "@tanstack/react-table"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const PAGE_SIZE_OPTIONS = [10, 20, 50]
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -21,9 +30,29 @@ export function DataTablePagination<TData>({
         {total === 0 ? "0 items" : `${from}–${to} of ${total}`}
       </p>
       <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm text-ink-mute">Rows</span>
+          <Select
+            value={String(pageSize)}
+            onValueChange={(v) => {
+              table.setPageSize(Number(v))
+              table.setPageIndex(0)
+            }}
+          >
+            <SelectTrigger className="h-7 w-[62px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <span className="text-sm text-ink-mute">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {Math.max(table.getPageCount(), 1)}
+          Page {pageIndex + 1} of {Math.max(table.getPageCount(), 1)}
         </span>
         <div className="flex items-center gap-1">
           <Button

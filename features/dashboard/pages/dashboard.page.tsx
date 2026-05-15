@@ -42,6 +42,7 @@ export function DashboardPage({ userId, role }: DashboardPageProps) {
     pageIndex,
     setPageIndex,
     pageSize,
+    setPageSize,
   } = useDashboardQuotes(userId)
 
   const { table, columns } = useDashboardTable({
@@ -52,6 +53,7 @@ export function DashboardPage({ userId, role }: DashboardPageProps) {
     pageIndex,
     pageSize,
     onPageIndexChange: setPageIndex,
+    onPageSizeChange: setPageSize,
   })
 
   return (
