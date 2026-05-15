@@ -4,7 +4,11 @@ import { redirect } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/server.service"
 import { ROUTES } from "@/lib/constants/routes.constants"
-import { forgotPasswordSchema, loginSchema } from "../schemas/auth.schema"
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  resetPasswordSchema,
+} from "../schemas/auth.schema"
 
 export async function loginAction(_prevState: unknown, formData: FormData) {
   const parsed = loginSchema.safeParse({
@@ -67,6 +71,27 @@ export async function forgotPasswordAction(
 
   if (error) {
     return { error: "Could not send reset email. Try again." }
+  }
+
+  return { success: true }
+}
+
+export async function resetPasswordAction(raw: {
+  password: string
+  confirmPassword: string
+}) {
+  const parsed = resetPasswordSchema.safeParse(raw)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
+  }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.password,
+  })
+
+  if (error) {
+    return { error: error.message }
   }
 
   return { success: true }
