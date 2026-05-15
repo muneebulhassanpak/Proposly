@@ -55,6 +55,11 @@ export function useDashboardQuotes(userId: string) {
   const totalCount = quotesQuery.data?.totalCount ?? 0
   const pageCount = Math.ceil(totalCount / pageSize)
 
+  function refetch() {
+    summaryQuery.refetch()
+    quotesQuery.refetch()
+  }
+
   return {
     summary: summaryQuery.data,
     isSummaryLoading: summaryQuery.isLoading,
@@ -62,6 +67,8 @@ export function useDashboardQuotes(userId: string) {
     totalCount,
     pageCount,
     isLoading: quotesQuery.isLoading,
+    isRefetching: quotesQuery.isRefetching,
+    refetch,
     search,
     setSearch: (value: string) => {
       setSearch(value)
