@@ -20,6 +20,7 @@ interface UseDashboardTableParams {
   pageIndex: number
   pageSize: number
   onPageIndexChange: (index: number) => void
+  onPageSizeChange: (size: number) => void
 }
 
 export function useDashboardTable({
@@ -30,6 +31,7 @@ export function useDashboardTable({
   pageIndex,
   pageSize,
   onPageIndexChange,
+  onPageSizeChange,
 }: UseDashboardTableParams) {
   const columns = useMemo(() => getDashboardColumns(), [])
 
@@ -48,7 +50,8 @@ export function useDashboardTable({
     onSortingChange,
     onPaginationChange: (updater) => {
       const next = typeof updater === "function" ? updater(pagination) : updater
-      onPageIndexChange(next.pageIndex)
+      if (next.pageSize !== pageSize) onPageSizeChange(next.pageSize)
+      if (next.pageIndex !== pageIndex) onPageIndexChange(next.pageIndex)
     },
   })
 
