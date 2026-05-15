@@ -1,10 +1,29 @@
-export default function PublicProposalPage() {
+import { notFound } from "next/navigation"
+import { Toaster } from "sonner"
+
+import { PublicProposalPage } from "@/features/proposal/pages/public-proposal.page"
+import {
+  getProposalByToken,
+  trackProposalOpened,
+} from "@/features/proposal/services/proposal.service"
+
+interface Props {
+  params: Promise<{ token: string }>
+}
+
+export default async function PublicProposalRoute({ params }: Props) {
+  const { token } = await params
+  const proposal = await getProposalByToken(token)
+
+  if (!proposal) notFound()
+
+  // Track open (fire-and-forget, guarded against double-fire in the service)
+  trackProposalOpened(proposal.quoteId, proposal.versionId, proposal.repId)
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
-      <div className="text-center">
-        <h1 className="text-xl font-semibold text-ink">Proposal</h1>
-        <p className="mt-1 text-sm text-ink-mute">Coming in Sprint 7.</p>
-      </div>
-    </div>
+    <>
+      <Toaster position="top-center" richColors />
+      <PublicProposalPage proposal={proposal} />
+    </>
   )
 }

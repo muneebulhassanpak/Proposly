@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Plus, RefreshCw } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -43,6 +43,8 @@ export function DashboardPage({ userId, role }: DashboardPageProps) {
     setPageIndex,
     pageSize,
     setPageSize,
+    isRefetching,
+    refetch,
   } = useDashboardQuotes(userId)
 
   const { table, columns } = useDashboardTable({
@@ -89,14 +91,28 @@ export function DashboardPage({ userId, role }: DashboardPageProps) {
               <SelectItem value={QUOTE_STATUS.LOST}>Lost</SelectItem>
             </SelectContent>
           </Select>
-          {role === USER_ROLES.REP && (
-            <Button size="sm" asChild className="ml-auto">
-              <Link href={ROUTES.NEW_QUOTE}>
-                <Plus size={14} strokeWidth={1.5} />
-                New Quote
-              </Link>
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={refetch}
+              disabled={isRefetching}
+            >
+              <RefreshCw
+                size={14}
+                strokeWidth={1.5}
+                className={isRefetching ? "animate-spin" : ""}
+              />
             </Button>
-          )}
+            {role === USER_ROLES.REP && (
+              <Button size="sm" asChild>
+                <Link href={ROUTES.NEW_QUOTE}>
+                  <Plus size={14} strokeWidth={1.5} />
+                  New Quote
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
 
         <QuotesTable table={table} columns={columns} isLoading={isLoading} />
