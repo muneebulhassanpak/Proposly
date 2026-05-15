@@ -22,6 +22,7 @@ export function useNotifications(userId: string) {
     queryKey: [NOTIFICATIONS_KEY, userId],
     queryFn: () => getNotifications(userId),
     enabled: open,
+    staleTime: 0,
   })
 
   const unreadCountQuery = useQuery({
