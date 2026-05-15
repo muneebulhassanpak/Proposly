@@ -28,7 +28,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm">
         <div className="rounded-lg border border-hairline bg-surface p-8">
-          <div className="mb-6 flex flex-col items-center gap-3">
+          <div className="mb-6 flex flex-col items-center gap-4">
             <div className="flex items-center gap-2.5">
               <Image
                 src="/proposly-mark.svg"
