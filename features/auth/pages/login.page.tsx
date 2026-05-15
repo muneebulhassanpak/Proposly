@@ -21,6 +21,7 @@ export function LoginPage() {
     togglePassword,
     honeypot,
     setHoneypot,
+    deactivated,
   } = useLogin()
 
   return (
@@ -42,6 +43,12 @@ export function LoginPage() {
             </div>
             <p className="text-sm text-ink-mute">Welcome back</p>
           </div>
+
+          {deactivated && (
+            <div className="mb-4 rounded-md border border-crimson/20 bg-crimson/5 px-3 py-2 text-sm text-crimson">
+              Your account has been deactivated. Contact your administrator.
+            </div>
+          )}
 
           <form
             onSubmit={handleSubmit(onSubmit)}

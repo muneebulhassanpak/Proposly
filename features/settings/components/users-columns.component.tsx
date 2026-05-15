@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreHorizontal, UserCheck, UserX } from "lucide-react"
+import { MoreHorizontal, Shield, UserCheck, UserX } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { SortIcon } from "@/components/sort-icon.component"
@@ -101,6 +101,7 @@ export function getUsersColumns({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onEditUser(user)}>
+                  <Shield size={14} strokeWidth={1.5} />
                   Change role
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

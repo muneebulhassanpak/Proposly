@@ -99,15 +99,27 @@ export function useUpdateUserRole() {
   return useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: UserRole }) =>
       updateUserRoleAction(userId, role),
+    onMutate: async ({ userId, role }) => {
+      await qc.cancelQueries({ queryKey: USERS_KEY })
+      const previous = qc.getQueryData<UserProfile[]>(USERS_KEY)
+      qc.setQueryData<UserProfile[]>(USERS_KEY, (old) =>
+        old?.map((u) => (u.id === userId ? { ...u, role } : u))
+      )
+      return { previous }
+    },
     onSuccess: (result) => {
       if (!result.success) {
         toast.error(result.error ?? "Failed to update role")
+        qc.invalidateQueries({ queryKey: USERS_KEY })
         return
       }
       toast.success("Role updated")
       qc.invalidateQueries({ queryKey: USERS_KEY })
     },
-    onError: () => toast.error("Failed to update role"),
+    onError: (_err, _vars, context) => {
+      if (context?.previous) qc.setQueryData(USERS_KEY, context.previous)
+      toast.error("Failed to update role")
+    },
   })
 }
 
@@ -116,14 +128,26 @@ export function useToggleUserActive() {
   return useMutation({
     mutationFn: ({ userId, isActive }: { userId: string; isActive: boolean }) =>
       toggleUserActiveAction(userId, isActive),
+    onMutate: async ({ userId, isActive }) => {
+      await qc.cancelQueries({ queryKey: USERS_KEY })
+      const previous = qc.getQueryData<UserProfile[]>(USERS_KEY)
+      qc.setQueryData<UserProfile[]>(USERS_KEY, (old) =>
+        old?.map((u) => (u.id === userId ? { ...u, is_active: isActive } : u))
+      )
+      return { previous }
+    },
     onSuccess: (result, variables) => {
       if (!result.success) {
         toast.error(result.error ?? "Failed to update status")
+        qc.invalidateQueries({ queryKey: USERS_KEY })
         return
       }
       toast.success(variables.isActive ? "User activated" : "User deactivated")
       qc.invalidateQueries({ queryKey: USERS_KEY })
     },
-    onError: () => toast.error("Failed to update status"),
+    onError: (_err, _vars, context) => {
+      if (context?.previous) qc.setQueryData(USERS_KEY, context.previous)
+      toast.error("Failed to update status")
+    },
   })
 }

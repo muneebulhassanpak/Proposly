@@ -23,6 +23,25 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     return { error: "Invalid email or password." }
   }
 
+  // Block deactivated users at login — sign out immediately
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_active")
+      .eq("id", user.id)
+      .single()
+
+    if (!profile || profile.is_active === false) {
+      await supabase.auth.signOut()
+      return {
+        error: "Your account has been deactivated. Contact your administrator.",
+      }
+    }
+  }
+
   redirect(ROUTES.DASHBOARD)
 }
 
