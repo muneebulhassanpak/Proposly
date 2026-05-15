@@ -59,6 +59,54 @@ export type QuotePreviewLineItem = {
   line_total: number
 }
 
+// --- Quote Detail types ---
+
+export type QuoteDetailVersion = {
+  id: string
+  versionNumber: number
+  status: string
+  subtotal: number
+  discountPercent: number
+  discountAmount: number
+  taxPercent: number
+  taxAmount: number
+  total: number
+  createdAt: string
+  lineItems: QuotePreviewLineItem[]
+}
+
+export type ActivityLogEntry = {
+  id: string
+  event: string
+  actorName: string | null
+  createdAt: string
+  meta: Record<string, unknown> | null
+  versionNumber: number | null
+}
+
+export type EmailLogEntry = {
+  id: string
+  recipient: string
+  subject: string | null
+  sentAt: string
+  openedAt: string | null
+}
+
+export type QuoteDetailData = {
+  id: string
+  title: string
+  status: string
+  expiresAt: string | null
+  createdAt: string
+  currency: string
+  clientName: string | null
+  clientCompanyName: string | null
+  clientEmail: string | null
+  versions: QuoteDetailVersion[]
+  activities: ActivityLogEntry[]
+  emails: EmailLogEntry[]
+}
+
 export type QuotePreviewData = {
   quoteId: string
   publicToken: string
