@@ -8,6 +8,6 @@ export default async function QuotesLayout({
 }: {
   children: ReactNode
 }) {
-  await requireRole([USER_ROLES.REP, USER_ROLES.MANAGER, USER_ROLES.ADMIN])
+  await requireRole(USER_ROLES.REP)
   return <>{children}</>
 }

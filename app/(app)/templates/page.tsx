@@ -1,4 +1,9 @@
-export default function TemplatesPage() {
+import { requireRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
+
+export default async function TemplatesPage() {
+  await requireRole([USER_ROLES.REP, USER_ROLES.ADMIN])
+
   return (
     <div>
       <h1 className="text-xl font-semibold text-ink">Templates</h1>
