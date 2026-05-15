@@ -45,6 +45,7 @@ interface QuoteDetailHeaderProps {
   hasDraftVersion: boolean
   onCreateVersion: () => void
   isCreatingVersion: boolean
+  isRep?: boolean
 }
 
 export function QuoteDetailHeader({
@@ -56,6 +57,7 @@ export function QuoteDetailHeader({
   hasDraftVersion,
   onCreateVersion,
   isCreatingVersion,
+  isRep = true,
 }: QuoteDetailHeaderProps) {
   const { label, variant } = getStatusBadge(status)
   const isAccepted = status === QUOTE_STATUS.ACCEPTED
@@ -65,7 +67,7 @@ export function QuoteDetailHeader({
   return (
     <div>
       <Button variant="ghost" size="sm" asChild className="mb-3 -ml-2">
-        <Link href={ROUTES.DASHBOARD}>
+        <Link href={isRep ? ROUTES.DASHBOARD : ROUTES.MANAGER_DASHBOARD}>
           <ArrowLeft size={14} strokeWidth={1.5} />
           Back to Dashboard
         </Link>
@@ -86,7 +88,7 @@ export function QuoteDetailHeader({
         </div>
 
         <div className="flex items-center gap-2">
-          {isDraft && (
+          {isRep && isDraft && (
             <Button size="sm" asChild>
               <Link href={ROUTES.QUOTE(quoteId)}>Edit Draft</Link>
             </Button>
@@ -97,7 +99,7 @@ export function QuoteDetailHeader({
               <span>Closed — accepted</span>
             </div>
           )}
-          {canCreateVersion && (
+          {isRep && canCreateVersion && (
             <Button
               size="sm"
               variant="outline"

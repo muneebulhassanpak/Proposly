@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth.utils"
 import { QuoteBuilderPage } from "@/features/quotes/pages/quote-builder.page"
 import { QuoteDetailPage } from "@/features/quotes/pages/quote-detail.page"
 import {
@@ -11,9 +12,10 @@ interface Props {
 
 export default async function QuoteRoute({ params }: Props) {
   const { id } = await params
-  const [settings, initial] = await Promise.all([
+  const [settings, initial, profile] = await Promise.all([
     getCompanyQuoteSettings(),
     getQuoteDraft(id),
+    requireAuth(),
   ])
 
   // Draft — open the builder
@@ -30,5 +32,5 @@ export default async function QuoteRoute({ params }: Props) {
   }
 
   // Non-draft — show the detail page
-  return <QuoteDetailPage quoteId={id} />
+  return <QuoteDetailPage quoteId={id} role={profile.role} />
 }

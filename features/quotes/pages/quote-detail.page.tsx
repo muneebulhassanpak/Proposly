@@ -11,11 +11,15 @@ import { EmailHistory } from "../components/email-history.component"
 import { ExpiredBanner } from "../components/expired-banner.component"
 import { ExtendExpiryDialog } from "../components/extend-expiry-dialog.component"
 
+import type { UserRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
+
 interface QuoteDetailPageProps {
   quoteId: string
+  role: UserRole
 }
 
-export function QuoteDetailPage({ quoteId }: QuoteDetailPageProps) {
+export function QuoteDetailPage({ quoteId, role }: QuoteDetailPageProps) {
   const {
     quote,
     isLoading,
@@ -67,6 +71,7 @@ export function QuoteDetailPage({ quoteId }: QuoteDetailPageProps) {
         hasDraftVersion={hasDraftVersion}
         onCreateVersion={onCreateVersion}
         isCreatingVersion={isCreatingVersion}
+        isRep={role === USER_ROLES.REP}
       />
 
       {isExpired && (

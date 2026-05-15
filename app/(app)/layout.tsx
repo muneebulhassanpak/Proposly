@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/features/shell/components/app-sidebar.component"
 import { TopNav } from "@/features/shell/components/top-nav.component"
 import { ApprovalBadge } from "@/features/approvals/components/approval-badge.component"
+import { NotificationPanel } from "@/features/notifications/components/notification-panel.component"
 import { createClient } from "@/lib/supabase/server.service"
 import { ROUTES } from "@/lib/constants/routes.constants"
 import { USER_ROLES } from "@/lib/constants/roles.constants"
@@ -48,7 +49,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           }
         />
         <SidebarInset className="overflow-hidden">
-          <TopNav profile={profile} />
+          <TopNav
+            profile={profile}
+            notificationSlot={<NotificationPanel userId={profile.id} />}
+          />
           <div className="flex-1 overflow-y-auto p-6">{children}</div>
         </SidebarInset>
       </SidebarProvider>

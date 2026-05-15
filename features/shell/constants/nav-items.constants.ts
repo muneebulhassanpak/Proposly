@@ -24,11 +24,22 @@ export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Templates", href: ROUTES.TEMPLATES, icon: LayoutTemplate },
   ],
   manager: [
-    { label: "Dashboard", href: ROUTES.DASHBOARD, icon: LayoutDashboard },
+    {
+      label: "Dashboard",
+      href: ROUTES.MANAGER_DASHBOARD,
+      icon: LayoutDashboard,
+    },
     { label: "Approvals", href: ROUTES.MANAGER_APPROVALS, icon: CheckSquare },
     { label: "Analytics", href: ROUTES.MANAGER_ANALYTICS, icon: BarChart2 },
   ],
   admin: [
+    {
+      label: "Dashboard",
+      href: ROUTES.MANAGER_DASHBOARD,
+      icon: LayoutDashboard,
+    },
+    { label: "Approvals", href: ROUTES.MANAGER_APPROVALS, icon: CheckSquare },
+    { label: "Analytics", href: ROUTES.MANAGER_ANALYTICS, icon: BarChart2 },
     { label: "Product Catalog", href: ROUTES.ADMIN_CATALOG, icon: Package },
     {
       label: "Discount Rules",
