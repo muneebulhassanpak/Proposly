@@ -8,10 +8,18 @@ import { loginAction } from "../actions/auth.action"
 export function useLogin() {
   const [state, formAction, isPending] = useActionState(loginAction, null)
   const [email, setEmail] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (state?.error) toast.error(state.error)
   }, [state])
 
-  return { formAction, isPending, email, setEmail }
+  return {
+    formAction,
+    isPending,
+    email,
+    setEmail,
+    showPassword,
+    togglePassword: () => setShowPassword((v) => !v),
+  }
 }
