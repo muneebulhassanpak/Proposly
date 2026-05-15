@@ -6,6 +6,7 @@ import { ROUTES } from "@/lib/constants/routes.constants"
 const PUBLIC_ROUTES: Set<string> = new Set([
   ROUTES.LOGIN,
   ROUTES.FORGOT_PASSWORD,
+  ROUTES.RESET_PASSWORD,
 ])
 const PUBLIC_PREFIXES = ["/p/", "/auth/"]
 

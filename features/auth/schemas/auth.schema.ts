@@ -11,3 +11,15 @@ export type LoginFormData = z.infer<typeof loginSchema>
 export const forgotPasswordSchema = z.object({
   email: z.string().email(),
 })
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
+
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
