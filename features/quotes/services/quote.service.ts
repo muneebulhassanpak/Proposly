@@ -74,10 +74,14 @@ export async function saveDraft(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("company_id")
+    .select("company_id, companies(default_currency)")
     .eq("id", user.id)
     .single()
   if (!profile?.company_id) return { success: false, error: "No company" }
+
+  const companyCurrency =
+    (profile.companies as { default_currency: string } | null)
+      ?.default_currency ?? "USD"
 
   const subtotal = input.line_items.reduce(
     (sum, item) => sum + item.unit_price * item.quantity,
@@ -162,6 +166,7 @@ export async function saveDraft(
       created_by: user.id,
       title: input.title,
       status: QUOTE_STATUS.DRAFT,
+      currency: companyCurrency,
       notes: input.notes || null,
       expires_at: input.expires_at,
     })
