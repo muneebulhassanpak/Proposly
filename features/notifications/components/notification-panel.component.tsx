@@ -99,16 +99,18 @@ export function NotificationPanel({ userId }: NotificationPanelProps) {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex w-[380px] flex-col gap-0 p-0 sm:w-[420px]">
+      <SheetContent
+        className="flex w-[380px] flex-col gap-0 p-0 sm:w-[420px]"
+        showCloseButton={false}
+      >
         <SheetHeader className="flex flex-row items-center justify-between border-b border-hairline px-4 py-3">
           <SheetTitle className="text-base">Notifications</SheetTitle>
           {unreadCount > 0 && (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={handleMarkAllRead}
               disabled={isMarkingAll}
-              className="text-xs text-accent"
             >
               Mark all as read
             </Button>
