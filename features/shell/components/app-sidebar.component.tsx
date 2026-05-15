@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import type { ReactNode } from "react"
 import { Plus, Settings } from "lucide-react"
 
 import {
@@ -30,6 +31,7 @@ interface AppSidebarProps {
     role: UserRole
   }
   companyName: string | null
+  badgeSlots?: Record<string, ReactNode>
 }
 
 function getInitials(name: string | null): string {
@@ -42,7 +44,11 @@ function getInitials(name: string | null): string {
     .slice(0, 2)
 }
 
-export function AppSidebar({ profile, companyName }: AppSidebarProps) {
+export function AppSidebar({
+  profile,
+  companyName,
+  badgeSlots,
+}: AppSidebarProps) {
   const pathname = usePathname()
   const items = NAV_ITEMS[profile.role]
   const isAdminSettingsActive =
@@ -106,6 +112,7 @@ export function AppSidebar({ profile, companyName }: AppSidebarProps) {
                         <span>{label}</span>
                       </Link>
                     </SidebarMenuButton>
+                    {badgeSlots?.[href]}
                   </SidebarMenuItem>
                 )
               })}
