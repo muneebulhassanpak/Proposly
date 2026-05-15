@@ -23,21 +23,22 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-6 flex items-center justify-center gap-2.5">
-          <Image
-            src="/proposly-mark.svg"
-            alt="Proposly"
-            width={36}
-            height={36}
-            priority
-          />
-          <span className="font-display text-3xl text-ink italic">
-            Proposly
-          </span>
-        </div>
-
         <div className="rounded-lg border border-hairline bg-surface p-8">
-          <h1 className="mb-6 text-lg font-semibold text-ink">Sign in</h1>
+          <div className="mb-6 flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              <Image
+                src="/proposly-mark.svg"
+                alt="Proposly"
+                width={32}
+                height={32}
+                priority
+              />
+              <span className="font-display text-2xl text-ink italic">
+                Proposly
+              </span>
+            </div>
+            <p className="text-sm text-ink-mute">Welcome back</p>
+          </div>
 
           <form action={formAction} className="space-y-4">
             <div className="space-y-1.5">
@@ -55,15 +56,7 @@ export function LoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href={ROUTES.FORGOT_PASSWORD}
-                  className="text-xs text-ink-mute transition-colors hover:text-ink"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -87,6 +80,15 @@ export function LoginPage() {
                   )}
                 </button>
               </div>
+            </div>
+
+            <div className="-mt-2 text-right">
+              <Link
+                href={ROUTES.FORGOT_PASSWORD}
+                className="text-xs text-ink-mute transition-colors hover:text-ink"
+              >
+                Forgot password?
+              </Link>
             </div>
 
             <Button type="submit" loading={isPending} className="w-full">
