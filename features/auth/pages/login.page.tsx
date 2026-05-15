@@ -12,12 +12,15 @@ import { useLogin } from "../hooks/use-login.hook"
 
 export function LoginPage() {
   const {
-    formAction,
+    register,
+    handleSubmit,
+    onSubmit,
+    errors,
     isPending,
-    email,
-    setEmail,
     showPassword,
     togglePassword,
+    honeypot,
+    setHoneypot,
   } = useLogin()
 
   return (
@@ -40,19 +43,35 @@ export function LoginPage() {
             <p className="text-sm text-ink-mute">Welcome back</p>
           </div>
 
-          <form action={formAction} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            className="space-y-4"
+          >
+            {/* Honeypot — hidden from real users, bots auto-fill it */}
+            <input
+              type="text"
+              name="company_url"
+              aria-hidden="true"
+              tabIndex={-1}
+              autoComplete="off"
+              className="absolute h-0 w-0 overflow-hidden opacity-0"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                name="email"
                 type="email"
                 placeholder="you@agency.com"
-                required
                 autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-xs text-crimson">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -60,12 +79,11 @@ export function LoginPage() {
               <div className="relative">
                 <Input
                   id="password"
-                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  required
                   autoComplete="current-password"
                   className="pr-9"
+                  {...register("password")}
                 />
                 <button
                   type="button"
@@ -80,6 +98,11 @@ export function LoginPage() {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-xs text-crimson">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <div className="-mt-2 text-right">
