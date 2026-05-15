@@ -23,7 +23,7 @@ export function QuoteDetailPage({ quoteId }: QuoteDetailPageProps) {
     setActiveVersionId,
     onCreateVersion,
     isCreatingVersion,
-    openArchiveDialog,
+    archiveVersion,
     extendDialogOpen,
     setExtendDialogOpen,
     onExtendExpiry,
@@ -84,7 +84,7 @@ export function QuoteDetailPage({ quoteId }: QuoteDetailPageProps) {
           selectedVersionId={selectedVersionId}
           onSelectVersion={setActiveVersionId}
           currency={quote.currency}
-          onArchive={openArchiveDialog}
+          onArchive={archiveVersion}
         />
       </div>
 

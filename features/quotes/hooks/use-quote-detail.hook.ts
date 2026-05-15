@@ -54,8 +54,6 @@ export function useQuoteDetail(quoteId: string) {
   })
 
   // --- Archive version ---
-  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
-  const [archiveTargetId, setArchiveTargetId] = useState<string | null>(null)
   const archiveVersionMutation = useMutation({
     mutationFn: (versionId: string) =>
       archiveVersionAction({ versionId, quoteId }),
@@ -67,20 +65,9 @@ export function useQuoteDetail(quoteId: string) {
         return
       }
       toast.success("Version archived")
-      setArchiveDialogOpen(false)
-      setArchiveTargetId(null)
       queryClient.invalidateQueries({ queryKey })
     },
   })
-
-  function openArchiveDialog(versionId: string) {
-    setArchiveTargetId(versionId)
-    setArchiveDialogOpen(true)
-  }
-
-  function confirmArchive() {
-    if (archiveTargetId) archiveVersionMutation.mutate(archiveTargetId)
-  }
 
   // --- Extend expiry ---
   const [extendDialogOpen, setExtendDialogOpen] = useState(false)
@@ -114,11 +101,8 @@ export function useQuoteDetail(quoteId: string) {
     onCreateVersion: () => createVersionMutation.mutate(),
     isCreatingVersion: createVersionMutation.isPending,
     // Archive version
-    archiveDialogOpen,
-    setArchiveDialogOpen,
-    archiveTargetId,
-    openArchiveDialog,
-    confirmArchive,
+    archiveVersion: (versionId: string) =>
+      archiveVersionMutation.mutate(versionId),
     isArchiving: archiveVersionMutation.isPending,
     // Extend expiry
     extendDialogOpen,
