@@ -218,8 +218,8 @@ function SortableRow({
         />
 
         {/* Bottom row: price, qty, total */}
-        <div className="grid grid-cols-3 gap-2">
-          <div>
+        <div className="grid grid-cols-2 gap-2 xs:grid-cols-3">
+          <div className="col-span-2 xs:col-span-1">
             <span className="text-[10px] text-ink-mute uppercase">Price</span>
             {item.product_id ? (
               <div className="mt-0.5 font-mono text-sm text-ink-mute tabular-nums">

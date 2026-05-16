@@ -92,7 +92,7 @@ export function QuoteBuilderPage({
             {isNew ? "Build and save a draft quote." : "Edit this draft quote."}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-col gap-2 xs:flex-row xs:items-center">
           <LoadTemplateDialog
             hasItems={lineItems.length > 0}
             onLoad={(templateItems) => setValue("line_items", templateItems)}
@@ -200,10 +200,13 @@ export function QuoteBuilderPage({
 
           {/* Line items */}
           <div className="rounded-[10px] border border-hairline bg-surface p-6">
-            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-4 flex flex-col gap-2 xs:flex-row xs:items-center xs:justify-between">
               <h2 className="text-sm font-medium text-ink">Line items</h2>
-              <div className="flex items-center gap-2">
-                <ProductSearchCombobox onSelect={addProductItem} />
+              <div className="flex flex-col gap-2 xs:flex-row xs:items-center">
+                <ProductSearchCombobox
+                  onSelect={addProductItem}
+                  currency={currency}
+                />
                 <Button
                   type="button"
                   variant="outline"

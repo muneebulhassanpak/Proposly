@@ -8,6 +8,9 @@
    THEME — maps CSS variables to Tailwind utility classes
    ============================================================ */
 @theme inline {
+  /* Breakpoints */
+  --breakpoint-xs: 480px;
+
   /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

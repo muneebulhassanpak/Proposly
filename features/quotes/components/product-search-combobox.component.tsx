@@ -20,10 +20,12 @@ import type { ProductSearchResult } from "../quotes.types"
 
 interface ProductSearchComboboxProps {
   onSelect: (product: ProductSearchResult) => void
+  currency: string
 }
 
 export function ProductSearchCombobox({
   onSelect,
+  currency,
 }: ProductSearchComboboxProps) {
   const { open, setOpen, search, setSearch, products, isSearching } =
     useProductSearch()
@@ -40,7 +42,10 @@ export function ProductSearchCombobox({
           Search catalog…
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0" align="start">
+      <PopoverContent
+        className="w-[calc(100vw-2rem)] p-0 xs:w-96"
+        align="start"
+      >
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="Type product name…"
@@ -74,7 +79,12 @@ export function ProductSearchCombobox({
                       )}
                     </div>
                     <span className="shrink-0 font-mono text-xs text-ink-mute tabular-nums">
-                      {Number(product.unit_price).toLocaleString()}
+                      {Number(product.unit_price).toLocaleString(undefined, {
+                        style: "currency",
+                        currency,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </CommandItem>
                 ))}
