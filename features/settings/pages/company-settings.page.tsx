@@ -61,9 +61,9 @@ export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
             </p>
           </div>
           <div className="rounded-lg border border-hairline bg-surface p-6">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-4 xs:flex-row xs:items-center">
               {logoPreview ? (
-                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-hairline bg-paper">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-hairline bg-paper">
                   <Image
                     src={logoPreview}
                     alt="Company logo"
@@ -73,11 +73,11 @@ export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
                   />
                 </div>
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-hairline bg-paper">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-hairline bg-paper">
                   <span className="text-xs text-ink-faint">No logo</span>
                 </div>
               )}
-              <div>
+              <div className="min-w-0">
                 <Label htmlFor="logo" className="mb-1.5 block">
                   Upload logo
                 </Label>
@@ -86,7 +86,7 @@ export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
                   name="logo"
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/svg+xml"
-                  className="w-64 cursor-pointer"
+                  className="w-full cursor-pointer xs:w-64"
                   onChange={(e) => {
                     const file = e.target.files?.[0]
                     if (file) onLogoChange(file)
@@ -109,8 +109,8 @@ export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
             </p>
           </div>
           <div className="rounded-lg border border-hairline bg-surface p-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2 space-y-1.5">
+            <div className="grid grid-cols-1 gap-4 xs:grid-cols-2">
+              <div className="space-y-1.5 xs:col-span-2">
                 <Label htmlFor="name">Company name</Label>
                 <Input
                   id="name"
@@ -169,7 +169,7 @@ export function CompanySettingsPage({ company }: CompanySettingsPageProps) {
             </p>
           </div>
           <div className="rounded-lg border border-hairline bg-surface p-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 xs:grid-cols-2">
               {/* Brand color */}
               <div className="space-y-1.5">
                 <Label htmlFor="brand_color">Brand accent color</Label>

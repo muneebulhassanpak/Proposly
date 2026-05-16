@@ -16,6 +16,7 @@ import { ROUTES } from "@/lib/constants/routes.constants"
 import { QUOTE_STATUS } from "@/lib/constants/quote.constants"
 import { useManagerQuotes } from "../hooks/use-manager-quotes.hook"
 import { useManagerTable } from "../hooks/use-manager-table.hook"
+import { useSummaryCollapse } from "../hooks/use-summary-collapse.hook"
 import { ManagerSummaryCards } from "../components/manager-summary-cards.component"
 import { ManagerQuotesTable } from "../components/manager-quotes-table.component"
 
@@ -43,6 +44,8 @@ export function ManagerDashboardPage({ companyId }: ManagerDashboardPageProps) {
     isRefetching,
     refetch,
   } = useManagerQuotes(companyId)
+
+  const { isCollapsed, toggleCollapse } = useSummaryCollapse()
 
   const { table, columns } = useManagerTable({
     quotes,
@@ -72,45 +75,54 @@ export function ManagerDashboardPage({ companyId }: ManagerDashboardPageProps) {
         </Button>
       </div>
 
-      <ManagerSummaryCards summary={summary} isLoading={isSummaryLoading} />
+      <ManagerSummaryCards
+        summary={summary}
+        isLoading={isSummaryLoading}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={toggleCollapse}
+      />
 
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Input
             placeholder="Search by title or client…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
+            className="sm:max-w-xs"
           />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-44">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              <SelectItem value={QUOTE_STATUS.DRAFT}>Draft</SelectItem>
-              <SelectItem value="pending_approval">Pending Approval</SelectItem>
-              <SelectItem value={QUOTE_STATUS.SENT}>Sent</SelectItem>
-              <SelectItem value={QUOTE_STATUS.OPENED}>Opened</SelectItem>
-              <SelectItem value={QUOTE_STATUS.ACCEPTED}>Accepted</SelectItem>
-              <SelectItem value={QUOTE_STATUS.REJECTED}>Rejected</SelectItem>
-              <SelectItem value={QUOTE_STATUS.EXPIRED}>Expired</SelectItem>
-              <SelectItem value={QUOTE_STATUS.LOST}>Lost</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="ml-auto">
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={refetch}
-              disabled={isRefetching}
-            >
-              <RefreshCw
-                size={14}
-                strokeWidth={1.5}
-                className={isRefetching ? "animate-spin" : ""}
-              />
-            </Button>
+          <div className="flex items-center gap-3">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value={QUOTE_STATUS.DRAFT}>Draft</SelectItem>
+                <SelectItem value="pending_approval">
+                  Pending Approval
+                </SelectItem>
+                <SelectItem value={QUOTE_STATUS.SENT}>Sent</SelectItem>
+                <SelectItem value={QUOTE_STATUS.OPENED}>Opened</SelectItem>
+                <SelectItem value={QUOTE_STATUS.ACCEPTED}>Accepted</SelectItem>
+                <SelectItem value={QUOTE_STATUS.REJECTED}>Rejected</SelectItem>
+                <SelectItem value={QUOTE_STATUS.EXPIRED}>Expired</SelectItem>
+                <SelectItem value={QUOTE_STATUS.LOST}>Lost</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="ml-auto">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={refetch}
+                disabled={isRefetching}
+              >
+                <RefreshCw
+                  size={14}
+                  strokeWidth={1.5}
+                  className={isRefetching ? "animate-spin" : ""}
+                />
+              </Button>
+            </div>
           </div>
         </div>
 

@@ -52,7 +52,10 @@ export function VersionTabs({
   return (
     <Tabs value={activeTabId ?? ""} onValueChange={onSelectVersion}>
       <div className="flex items-center gap-2">
-        <TabsList variant="line" className="border-b border-hairline pb-0">
+        <TabsList
+          variant="line"
+          className="overflow-x-auto border-b border-hairline pb-0"
+        >
           {versions.map((v) => {
             const chip = getVersionChip(v.status)
             return (

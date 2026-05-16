@@ -25,12 +25,12 @@ export function DataTablePagination<TData>({
   const to = Math.min((pageIndex + 1) * pageSize, total)
 
   return (
-    <div className="flex items-center justify-between border-t border-hairline px-4 py-3">
+    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-hairline px-4 py-3">
       <p className="text-sm text-ink-mute">
         {total === 0 ? "0 items" : `${from}–${to} of ${total}`}
       </p>
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1.5">
+        <div className="hidden items-center gap-1.5 sm:flex">
           <span className="text-sm text-ink-mute">Rows</span>
           <Select
             value={String(pageSize)}
@@ -51,7 +51,7 @@ export function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <span className="text-sm text-ink-mute">
+        <span className="hidden text-sm text-ink-mute sm:inline">
           Page {pageIndex + 1} of {Math.max(table.getPageCount(), 1)}
         </span>
         <div className="flex items-center gap-1">

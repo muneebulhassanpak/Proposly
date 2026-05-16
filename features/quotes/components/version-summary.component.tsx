@@ -17,44 +17,46 @@ interface VersionSummaryProps {
 
 export function VersionSummary({ version, currency }: VersionSummaryProps) {
   return (
-    <div className="flex-1 space-y-4">
+    <div className="min-w-0 flex-1 space-y-4">
       {/* Line items table */}
       {version.lineItems.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Item</TableHead>
-              <TableHead className="w-20 text-right">Qty</TableHead>
-              <TableHead className="w-28 text-right">Unit Price</TableHead>
-              <TableHead className="w-28 text-right">Total</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {version.lineItems.map((li) => (
-              <TableRow key={li.id}>
-                <TableCell>
-                  <p className="font-medium text-ink">{li.name}</p>
-                  {li.description && (
-                    <p className="text-xs text-ink-mute">{li.description}</p>
-                  )}
-                </TableCell>
-                <TableCell className="text-right font-mono tabular-nums">
-                  {li.quantity}
-                </TableCell>
-                <TableCell className="text-right font-mono tabular-nums">
-                  {formatMoney(li.unit_price, currency)}
-                </TableCell>
-                <TableCell className="text-right font-mono tabular-nums">
-                  {formatMoney(li.line_total, currency)}
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item</TableHead>
+                <TableHead className="w-20 text-right">Qty</TableHead>
+                <TableHead className="w-28 text-right">Unit Price</TableHead>
+                <TableHead className="w-28 text-right">Total</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {version.lineItems.map((li) => (
+                <TableRow key={li.id}>
+                  <TableCell>
+                    <p className="font-medium text-ink">{li.name}</p>
+                    {li.description && (
+                      <p className="text-xs text-ink-mute">{li.description}</p>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
+                    {li.quantity}
+                  </TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
+                    {formatMoney(li.unit_price, currency)}
+                  </TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
+                    {formatMoney(li.line_total, currency)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {/* Totals */}
-      <div className="ml-auto w-64">
+      <div className="w-full sm:ml-auto sm:w-64">
         <div className="flex justify-between py-1 text-sm">
           <span className="text-ink-mute">Subtotal</span>
           <span className="font-mono tabular-nums">
