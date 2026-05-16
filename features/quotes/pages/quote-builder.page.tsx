@@ -85,7 +85,7 @@ export function QuoteBuilderPage({
       </Button>
 
       {/* Page header */}
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <h1 className="text-xl font-semibold text-ink">{pageTitle}</h1>
           <p className="mt-1 text-sm text-ink-mute">
@@ -144,7 +144,7 @@ export function QuoteBuilderPage({
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>Client</Label>
                   <Controller
@@ -200,7 +200,7 @@ export function QuoteBuilderPage({
 
           {/* Line items */}
           <div className="rounded-[10px] border border-hairline bg-surface p-6">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-sm font-medium text-ink">Line items</h2>
               <div className="flex items-center gap-2">
                 <ProductSearchCombobox onSelect={addProductItem} />

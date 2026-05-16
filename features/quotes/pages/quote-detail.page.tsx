@@ -82,7 +82,7 @@ export function QuoteDetailPage({ quoteId, role }: QuoteDetailPageProps) {
       )}
 
       {/* Versions */}
-      <div className="rounded-[10px] border border-hairline bg-surface p-5">
+      <div className="overflow-hidden rounded-[10px] border border-hairline bg-surface p-5">
         <h2 className="mb-4 text-sm font-semibold text-ink">Versions</h2>
         <VersionTabs
           versions={quote.versions}
