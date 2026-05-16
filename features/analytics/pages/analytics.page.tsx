@@ -10,6 +10,9 @@ import {
   YAxis,
 } from "recharts"
 
+import { ChevronDown, ChevronUp } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Select,
@@ -18,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useCollapse } from "@/lib/hooks/use-collapse.hook"
 import { formatMoney } from "@/lib/utils/format.utils"
 import { useAnalytics } from "../hooks/use-analytics.hook"
 import type { DateRangePreset } from "../analytics.types"
@@ -35,6 +39,7 @@ const DATE_RANGE_LABELS: Record<DateRangePreset, string> = {
 
 export function AnalyticsPage({ companyId }: AnalyticsPageProps) {
   const { data, isLoading, dateRange, setDateRange } = useAnalytics(companyId)
+  const { isCollapsed, toggleCollapse } = useCollapse()
 
   return (
     <div className="space-y-6">
@@ -63,35 +68,61 @@ export function AnalyticsPage({ companyId }: AnalyticsPageProps) {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          label="Win Rate"
-          value={data ? `${data.metrics.winRate}%` : undefined}
-          isLoading={isLoading}
-        />
-        <MetricCard
-          label="Avg Quote Value"
-          value={
-            data
-              ? formatMoney(data.metrics.avgQuoteValue, data.metrics.currency)
-              : undefined
-          }
-          isLoading={isLoading}
-        />
-        <MetricCard
-          label="Avg Time to Close"
-          value={data ? `${data.metrics.avgTimeToClose}d` : undefined}
-          isLoading={isLoading}
-        />
-        <MetricCard
-          label="Revenue Won"
-          value={
-            data
-              ? formatMoney(data.metrics.totalRevenueWon, data.metrics.currency)
-              : undefined
-          }
-          isLoading={isLoading}
-        />
+      <div>
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-ink-mute">Summary</p>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={toggleCollapse}
+            aria-label={isCollapsed ? "Expand summary" : "Collapse summary"}
+          >
+            {isCollapsed ? (
+              <ChevronDown size={16} strokeWidth={1.5} />
+            ) : (
+              <ChevronUp size={16} strokeWidth={1.5} />
+            )}
+          </Button>
+        </div>
+
+        {!isCollapsed && (
+          <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <MetricCard
+              label="Win Rate"
+              value={data ? `${data.metrics.winRate}%` : undefined}
+              isLoading={isLoading}
+            />
+            <MetricCard
+              label="Avg Quote Value"
+              value={
+                data
+                  ? formatMoney(
+                      data.metrics.avgQuoteValue,
+                      data.metrics.currency
+                    )
+                  : undefined
+              }
+              isLoading={isLoading}
+            />
+            <MetricCard
+              label="Avg Time to Close"
+              value={data ? `${data.metrics.avgTimeToClose}d` : undefined}
+              isLoading={isLoading}
+            />
+            <MetricCard
+              label="Revenue Won"
+              value={
+                data
+                  ? formatMoney(
+                      data.metrics.totalRevenueWon,
+                      data.metrics.currency
+                    )
+                  : undefined
+              }
+              isLoading={isLoading}
+            />
+          </div>
+        )}
       </div>
 
       {/* Charts */}
