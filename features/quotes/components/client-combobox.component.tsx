@@ -132,6 +132,7 @@ export function ClientCombobox({
     createOpen,
     setCreateOpen,
     clients,
+    isSearching,
     displayLabel,
   } = useClientSearch(value, selectedClient)
 
@@ -163,7 +164,7 @@ export function ClientCombobox({
             />
             <CommandList>
               <CommandEmpty className="py-4 text-center text-sm text-ink-mute">
-                No clients found.
+                {isSearching ? "Searching..." : "No clients found."}
               </CommandEmpty>
               {clients.length > 0 && (
                 <CommandGroup>

@@ -1,9 +1,10 @@
-import { requireAuth } from "@/lib/auth.utils"
+import { requireRole } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { getCompany } from "@/features/settings/services/company.service"
 import { CompanySettingsPage } from "@/features/settings/pages/company-settings.page"
 
 export default async function Page() {
-  const profile = await requireAuth()
+  const profile = await requireRole(USER_ROLES.ADMIN)
   const company = await getCompany(profile.company_id!)
   return <CompanySettingsPage company={company} />
 }
