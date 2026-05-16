@@ -19,11 +19,13 @@ export function useProductSearch() {
     }
   }, [search])
 
-  const { data: products = [] } = useQuery({
+  const { data: products = [], isFetching } = useQuery({
     queryKey: ["products-search", debouncedSearch],
     queryFn: () => searchProductsAction(debouncedSearch),
     staleTime: 30_000,
   })
 
-  return { open, setOpen, search, setSearch, products }
+  const isSearching = isFetching || search !== debouncedSearch
+
+  return { open, setOpen, search, setSearch, products, isSearching }
 }

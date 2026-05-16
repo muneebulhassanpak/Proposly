@@ -25,7 +25,8 @@ interface ProductSearchComboboxProps {
 export function ProductSearchCombobox({
   onSelect,
 }: ProductSearchComboboxProps) {
-  const { open, setOpen, search, setSearch, products } = useProductSearch()
+  const { open, setOpen, search, setSearch, products, isSearching } =
+    useProductSearch()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -48,7 +49,7 @@ export function ProductSearchCombobox({
           />
           <CommandList>
             <CommandEmpty className="py-4 text-center text-sm text-ink-mute">
-              No products found.
+              {isSearching ? "Searching..." : "No products found."}
             </CommandEmpty>
             {products.length > 0 && (
               <CommandGroup>

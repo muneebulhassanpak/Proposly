@@ -27,11 +27,13 @@ export function useClientSearch(
     }
   }, [search])
 
-  const { data: clients = [] } = useQuery({
+  const { data: clients = [], isFetching } = useQuery({
     queryKey: ["clients-search", debouncedSearch],
     queryFn: () => searchClientsAction(debouncedSearch),
     staleTime: 30_000,
   })
+
+  const isSearching = isFetching || search !== debouncedSearch
 
   const displayLabel = selectedClient
     ? selectedClient.name
@@ -47,6 +49,7 @@ export function useClientSearch(
     createOpen,
     setCreateOpen,
     clients,
+    isSearching,
     displayLabel,
   }
 }

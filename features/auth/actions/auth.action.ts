@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/server.service"
 import { ROUTES } from "@/lib/constants/routes.constants"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -34,7 +35,7 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_active")
+      .select("is_active, role")
       .eq("id", user.id)
       .single()
 
@@ -43,6 +44,13 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
       return {
         error: "Your account has been deactivated. Contact your administrator.",
       }
+    }
+
+    if (
+      profile.role === USER_ROLES.MANAGER ||
+      profile.role === USER_ROLES.ADMIN
+    ) {
+      redirect(ROUTES.MANAGER_DASHBOARD)
     }
   }
 
