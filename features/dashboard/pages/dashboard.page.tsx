@@ -16,6 +16,7 @@ import type { UserRole } from "@/lib/auth.utils"
 import { ROUTES } from "@/lib/constants/routes.constants"
 import { QUOTE_STATUS } from "@/lib/constants/quote.constants"
 import { USER_ROLES } from "@/lib/constants/roles.constants"
+import { useCollapse } from "@/lib/hooks/use-collapse.hook"
 import { useDashboardQuotes } from "../hooks/use-dashboard-quotes.hook"
 import { useDashboardTable } from "../hooks/use-dashboard-table.hook"
 import { SummaryCards } from "../components/summary-cards.component"
@@ -47,6 +48,8 @@ export function DashboardPage({ userId, role }: DashboardPageProps) {
     refetch,
   } = useDashboardQuotes(userId)
 
+  const { isCollapsed, toggleCollapse } = useCollapse()
+
   const { table, columns } = useDashboardTable({
     quotes,
     pageCount,
@@ -65,53 +68,62 @@ export function DashboardPage({ userId, role }: DashboardPageProps) {
         <p className="mt-1 text-sm text-ink-mute">Your quotes at a glance.</p>
       </div>
 
-      <SummaryCards summary={summary} isLoading={isSummaryLoading} />
+      <SummaryCards
+        summary={summary}
+        isLoading={isSummaryLoading}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={toggleCollapse}
+      />
 
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Input
             placeholder="Search by title or client…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
+            className="sm:max-w-xs"
           />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-44">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              <SelectItem value={QUOTE_STATUS.DRAFT}>Draft</SelectItem>
-              <SelectItem value="pending_approval">Pending Approval</SelectItem>
-              <SelectItem value={QUOTE_STATUS.SENT}>Sent</SelectItem>
-              <SelectItem value={QUOTE_STATUS.OPENED}>Opened</SelectItem>
-              <SelectItem value={QUOTE_STATUS.ACCEPTED}>Accepted</SelectItem>
-              <SelectItem value={QUOTE_STATUS.REJECTED}>Rejected</SelectItem>
-              <SelectItem value={QUOTE_STATUS.EXPIRED}>Expired</SelectItem>
-              <SelectItem value={QUOTE_STATUS.LOST}>Lost</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="ml-auto flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={refetch}
-              disabled={isRefetching}
-            >
-              <RefreshCw
-                size={14}
-                strokeWidth={1.5}
-                className={isRefetching ? "animate-spin" : ""}
-              />
-            </Button>
-            {role === USER_ROLES.REP && (
-              <Button size="sm" asChild>
-                <Link href={ROUTES.NEW_QUOTE}>
-                  <Plus size={14} strokeWidth={1.5} />
-                  New Quote
-                </Link>
+          <div className="flex flex-1 items-center gap-3">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value={QUOTE_STATUS.DRAFT}>Draft</SelectItem>
+                <SelectItem value="pending_approval">
+                  Pending Approval
+                </SelectItem>
+                <SelectItem value={QUOTE_STATUS.SENT}>Sent</SelectItem>
+                <SelectItem value={QUOTE_STATUS.OPENED}>Opened</SelectItem>
+                <SelectItem value={QUOTE_STATUS.ACCEPTED}>Accepted</SelectItem>
+                <SelectItem value={QUOTE_STATUS.REJECTED}>Rejected</SelectItem>
+                <SelectItem value={QUOTE_STATUS.EXPIRED}>Expired</SelectItem>
+                <SelectItem value={QUOTE_STATUS.LOST}>Lost</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={refetch}
+                disabled={isRefetching}
+              >
+                <RefreshCw
+                  size={14}
+                  strokeWidth={1.5}
+                  className={isRefetching ? "animate-spin" : ""}
+                />
               </Button>
-            )}
+              {role === USER_ROLES.REP && (
+                <Button size="sm" asChild>
+                  <Link href={ROUTES.NEW_QUOTE}>
+                    <Plus size={14} strokeWidth={1.5} />
+                    New Quote
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
