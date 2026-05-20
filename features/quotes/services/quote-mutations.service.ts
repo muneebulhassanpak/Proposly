@@ -29,6 +29,17 @@ export async function sendQuote(
   if (!clientEmail)
     return { success: false, error: "Client has no email address" }
 
+  // Ensure the quote has a public token (generated on first send)
+  let publicToken = quote.public_token
+  if (!publicToken) {
+    publicToken = crypto.randomUUID()
+    const { error: tokenErr } = await supabase
+      .from("quotes")
+      .update({ public_token: publicToken })
+      .eq("id", quoteId)
+    if (tokenErr) return { success: false, error: tokenErr.message }
+  }
+
   // Get the draft version to promote
   const { data: version } = await supabase
     .from("quote_versions")
@@ -43,7 +54,7 @@ export async function sendQuote(
 
   // Build email content before making any state changes
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-  const publicLink = `${siteUrl}/p/${quote.public_token}`
+  const publicLink = `${siteUrl}/p/${publicToken}`
   const companyName =
     (quote.companies as { name?: string } | null)?.name ?? "Your Agency"
   const clientName =
