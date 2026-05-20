@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth.utils"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 import { QuoteBuilderPage } from "@/features/quotes/pages/quote-builder.page"
 import { QuoteDetailPage } from "@/features/quotes/pages/quote-detail.page"
 import {
@@ -18,8 +19,8 @@ export default async function QuoteRoute({ params }: Props) {
     requireAuth(),
   ])
 
-  // Draft — open the builder
-  if (initial) {
+  // Draft + rep who owns it — open the builder
+  if (initial && profile.role === USER_ROLES.REP) {
     return (
       <QuoteBuilderPage
         defaultTaxPercent={settings.defaultTaxPercent}
@@ -31,6 +32,6 @@ export default async function QuoteRoute({ params }: Props) {
     )
   }
 
-  // Non-draft — show the detail page
+  // All other cases — show the read-only detail page
   return <QuoteDetailPage quoteId={id} role={profile.role} />
 }

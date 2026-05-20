@@ -2,9 +2,17 @@ import Link from "next/link"
 import { ShieldX } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { getProfile } from "@/lib/auth.utils"
 import { ROUTES } from "@/lib/constants/routes.constants"
+import { USER_ROLES } from "@/lib/constants/roles.constants"
 
-export default function ForbiddenPage() {
+export default async function ForbiddenPage() {
+  const profile = await getProfile()
+  const dashboardHref =
+    profile?.role === USER_ROLES.REP
+      ? ROUTES.DASHBOARD
+      : ROUTES.MANAGER_DASHBOARD
+
   return (
     <div className="flex min-h-full flex-col items-center justify-center text-center">
       <ShieldX size={40} strokeWidth={1.5} className="text-ink-faint" />
@@ -16,7 +24,7 @@ export default function ForbiddenPage() {
         You don&apos;t have permission to view this page.
       </p>
       <Button asChild variant="outline" size="sm" className="mt-6">
-        <Link href={ROUTES.DASHBOARD}>Back to dashboard</Link>
+        <Link href={dashboardHref}>Back to dashboard</Link>
       </Button>
     </div>
   )
