@@ -1,15 +1,17 @@
+import { Skeleton } from "@/components/ui/skeleton"
+
 export default function ApprovalsLoading() {
   return (
-    <div className="animate-pulse">
+    <div>
       {/* Header */}
       <div className="mb-6 space-y-2">
-        <div className="h-5 w-40 rounded-sm bg-hairline" />
-        <div className="h-3.5 w-56 rounded-sm bg-hairline" />
+        <Skeleton className="h-5 w-40" />
+        <Skeleton className="h-3.5 w-56" />
       </div>
 
       {/* Table */}
       <div className="rounded-[10px] border border-hairline bg-surface">
-        <div className="h-10 w-full border-b border-hairline bg-hairline/40" />
+        <Skeleton className="h-10 w-full rounded-none border-b border-hairline opacity-40" />
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="h-12 w-full border-b border-hairline" />
         ))}
