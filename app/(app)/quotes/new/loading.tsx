@@ -1,15 +1,17 @@
+import { Skeleton } from "@/components/ui/skeleton"
+
 export default function NewQuoteLoading() {
   return (
-    <div className="animate-pulse">
+    <div>
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div className="space-y-2">
-          <div className="h-5 w-28 rounded-sm bg-hairline" />
-          <div className="h-3.5 w-52 rounded-sm bg-hairline" />
+          <Skeleton className="h-5 w-28" />
+          <Skeleton className="h-3.5 w-52" />
         </div>
         <div className="flex gap-2">
-          <div className="h-8 w-28 rounded-[6px] bg-hairline" />
-          <div className="h-8 w-28 rounded-[6px] bg-hairline" />
+          <Skeleton className="h-8 w-28 rounded-[6px]" />
+          <Skeleton className="h-8 w-28 rounded-[6px]" />
         </div>
       </div>
 
@@ -18,21 +20,21 @@ export default function NewQuoteLoading() {
         {/* Left — details + line items */}
         <div className="space-y-6">
           <div className="rounded-[10px] border border-hairline bg-surface p-6">
-            <div className="mb-4 h-4 w-24 rounded-sm bg-hairline" />
+            <Skeleton className="mb-4 h-4 w-24" />
             <div className="space-y-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="space-y-1.5">
-                  <div className="h-3.5 w-16 rounded-sm bg-hairline" />
-                  <div className="h-9 w-full rounded-[6px] bg-hairline" />
+                  <Skeleton className="h-3.5 w-16" />
+                  <Skeleton className="h-9 w-full rounded-[6px]" />
                 </div>
               ))}
             </div>
           </div>
           <div className="rounded-[10px] border border-hairline bg-surface p-6">
-            <div className="mb-4 h-4 w-20 rounded-sm bg-hairline" />
+            <Skeleton className="mb-4 h-4 w-20" />
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-10 w-full rounded-sm bg-hairline" />
+                <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
           </div>
@@ -41,23 +43,23 @@ export default function NewQuoteLoading() {
         {/* Right — totals */}
         <div className="space-y-4">
           <div className="rounded-[10px] border border-hairline bg-surface p-5">
-            <div className="mb-4 h-4 w-14 rounded-sm bg-hairline" />
+            <Skeleton className="mb-4 h-4 w-14" />
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="flex justify-between">
-                  <div className="h-3.5 w-16 rounded-sm bg-hairline" />
-                  <div className="h-3.5 w-20 rounded-sm bg-hairline" />
+                  <Skeleton className="h-3.5 w-16" />
+                  <Skeleton className="h-3.5 w-20" />
                 </div>
               ))}
             </div>
           </div>
           <div className="rounded-[10px] border border-hairline bg-surface p-5">
-            <div className="mb-3 h-3 w-36 rounded-sm bg-hairline" />
+            <Skeleton className="mb-3 h-3 w-36" />
             <div className="space-y-2">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="flex justify-between">
-                  <div className="h-3.5 w-20 rounded-sm bg-hairline" />
-                  <div className="h-3.5 w-16 rounded-sm bg-hairline" />
+                  <Skeleton className="h-3.5 w-20" />
+                  <Skeleton className="h-3.5 w-16" />
                 </div>
               ))}
             </div>

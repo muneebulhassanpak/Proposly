@@ -4,6 +4,12 @@ import Image from "next/image"
 import Link from "next/link"
 import { Eye, EyeOff } from "lucide-react"
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -127,9 +133,69 @@ export function LoginPage() {
           </form>
         </div>
 
-        <p className="mt-4 text-center text-xs text-ink-mute">
-          For access, contact your administrator.
-        </p>
+        <Accordion
+          type="single"
+          collapsible
+          className="mt-4 rounded-[10px] border border-hairline bg-surface"
+        >
+          <AccordionItem value="demo" className="border-none">
+            <AccordionTrigger className="px-4 text-xs text-ink-mute">
+              Demo credentials
+            </AccordionTrigger>
+            <AccordionContent className="px-4">
+              <table className="w-full border-collapse overflow-hidden rounded-md border border-hairline font-mono text-xs">
+                <thead>
+                  <tr className="bg-paper text-ink-mute">
+                    <th className="border border-hairline px-3 py-2 text-center font-normal">
+                      Role
+                    </th>
+                    <th className="border border-hairline px-3 py-2 text-center font-normal">
+                      Email
+                    </th>
+                    <th className="border border-hairline px-3 py-2 text-center font-normal">
+                      Password
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-ink">
+                  <tr>
+                    <td className="border border-hairline px-3 py-2 text-center text-ink-mute">
+                      Admin
+                    </td>
+                    <td className="border border-hairline px-3 py-2 text-center">
+                      admin@proposly.com
+                    </td>
+                    <td className="border border-hairline px-3 py-2 text-center">
+                      Demo1234!
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-hairline px-3 py-2 text-center text-ink-mute">
+                      Manager
+                    </td>
+                    <td className="border border-hairline px-3 py-2 text-center">
+                      manager@gmail.com
+                    </td>
+                    <td className="border border-hairline px-3 py-2 text-center">
+                      Demo1234!
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-hairline px-3 py-2 text-center text-ink-mute">
+                      Rep
+                    </td>
+                    <td className="border border-hairline px-3 py-2 text-center">
+                      rep@gmail.com
+                    </td>
+                    <td className="border border-hairline px-3 py-2 text-center">
+                      Demo1234!
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </div>
   )
