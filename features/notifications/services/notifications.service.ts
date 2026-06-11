@@ -10,6 +10,7 @@ export async function getNotifications(
     .from("notifications")
     .select("id, quote_id, type, message, is_read, created_at")
     .eq("user_id", userId)
+    .is("dismissed_at", null)
     .order("created_at", { ascending: false })
     .limit(50)
 
@@ -31,6 +32,7 @@ export async function getUnreadCount(userId: string): Promise<number> {
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
     .eq("is_read", false)
+    .is("dismissed_at", null)
 
   return count ?? 0
 }
@@ -52,4 +54,14 @@ export async function markAsRead(notificationId: string): Promise<void> {
     .from("notifications")
     .update({ is_read: true })
     .eq("id", notificationId)
+}
+
+export async function dismissAllNotifications(userId: string): Promise<void> {
+  const supabase = createClient()
+
+  await supabase
+    .from("notifications")
+    .update({ dismissed_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .is("dismissed_at", null)
 }

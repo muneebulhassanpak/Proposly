@@ -8,6 +8,7 @@ import {
   MessageSquare,
   ShieldCheck,
   ShieldX,
+  Trash2,
   XCircle,
 } from "lucide-react"
 
@@ -72,6 +73,8 @@ export function NotificationPanel({ userId }: NotificationPanelProps) {
     handleMarkAllRead,
     handleMarkOneRead,
     isMarkingAll,
+    handleDismissAll,
+    isDismissingAll,
   } = useNotifications(userId)
 
   function handleClick(notificationId: string, quoteId: string | null) {
@@ -105,16 +108,29 @@ export function NotificationPanel({ userId }: NotificationPanelProps) {
       >
         <SheetHeader className="flex flex-row items-center justify-between border-b border-hairline px-4 py-3">
           <SheetTitle className="text-base">Notifications</SheetTitle>
-          {unreadCount > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleMarkAllRead}
-              disabled={isMarkingAll}
-            >
-              Mark all as read
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleMarkAllRead}
+                disabled={isMarkingAll}
+              >
+                Mark all as read
+              </Button>
+            )}
+            {notifications.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDismissAll}
+                loading={isDismissingAll}
+              >
+                <Trash2 size={14} strokeWidth={1.5} />
+                Clear all
+              </Button>
+            )}
+          </div>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto">
           {isLoading &&

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 export type Json =
   | string
   | number
@@ -282,6 +283,7 @@ export type Database = {
       notifications: {
         Row: {
           created_at: string | null
+          dismissed_at: string | null
           id: string
           is_read: boolean | null
           message: string | null
@@ -291,6 +293,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          dismissed_at?: string | null
           id?: string
           is_read?: boolean | null
           message?: string | null
@@ -300,6 +303,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          dismissed_at?: string | null
           id?: string
           is_read?: boolean | null
           message?: string | null
