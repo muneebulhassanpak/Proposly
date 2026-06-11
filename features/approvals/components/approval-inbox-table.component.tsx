@@ -86,7 +86,7 @@ export function ApprovalInboxTable({
                 <TableCell>
                   <Link
                     href={ROUTES.MANAGER_APPROVAL_DETAIL(a.id)}
-                    className="font-medium text-ink hover:text-accent"
+                    className="font-medium text-ink hover:underline"
                   >
                     {a.quoteTitle}
                   </Link>
