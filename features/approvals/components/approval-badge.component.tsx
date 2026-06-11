@@ -7,7 +7,7 @@ export function ApprovalBadge() {
   const count = useApprovalBadgeCount()
   if (count === 0) return null
   return (
-    <SidebarMenuBadge className="bg-accent text-[10px] text-white">
+    <SidebarMenuBadge className="bg-primary text-[10px] text-primary-foreground">
       {count}
     </SidebarMenuBadge>
   )
