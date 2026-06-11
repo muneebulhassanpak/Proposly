@@ -12,9 +12,21 @@ import type {
 
 // --- Queries ---
 
+export interface PendingApprovalsParams {
+  search: string
+  page: number
+  pageSize: number
+}
+
+export interface PendingApprovalsResult {
+  approvals: ApprovalListItem[]
+  totalCount: number
+}
+
 export async function getPendingApprovals(
-  companyId: string
-): Promise<ApprovalListItem[]> {
+  companyId: string,
+  params?: PendingApprovalsParams
+): Promise<PendingApprovalsResult> {
   const supabase = await createClient()
 
   const { data } = await supabase
@@ -69,7 +81,28 @@ export async function getPendingApprovals(
     })
   }
 
-  return items
+  // Client-side search (nested joins prevent server-side ilike)
+  const search = params?.search?.toLowerCase() ?? ""
+  const filtered = search
+    ? items.filter(
+        (a) =>
+          a.quoteTitle.toLowerCase().includes(search) ||
+          (a.clientName ?? "").toLowerCase().includes(search) ||
+          (a.clientCompanyName ?? "").toLowerCase().includes(search) ||
+          a.repName.toLowerCase().includes(search)
+      )
+    : items
+
+  const totalCount = filtered.length
+
+  // Pagination
+  if (params) {
+    const from = params.page * params.pageSize
+    const to = from + params.pageSize
+    return { approvals: filtered.slice(from, to), totalCount }
+  }
+
+  return { approvals: filtered, totalCount }
 }
 
 export async function getPendingApprovalCount(

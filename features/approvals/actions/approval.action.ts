@@ -14,14 +14,16 @@ import {
   requestApproval,
   approveQuote,
   rejectQuote,
+  type PendingApprovalsParams,
+  type PendingApprovalsResult,
 } from "../services/approval.service"
-import type { ApprovalListItem, ApprovalDetailData } from "../approvals.types"
+import type { ApprovalDetailData } from "../approvals.types"
 
-export async function fetchPendingApprovalsAction(): Promise<
-  ApprovalListItem[]
-> {
+export async function fetchPendingApprovalsAction(
+  params?: PendingApprovalsParams
+): Promise<PendingApprovalsResult> {
   const profile = await requireRole([USER_ROLES.MANAGER, USER_ROLES.ADMIN])
-  return getPendingApprovals(profile.company_id!)
+  return getPendingApprovals(profile.company_id!, params)
 }
 
 export async function fetchPendingApprovalCountAction(): Promise<number> {
