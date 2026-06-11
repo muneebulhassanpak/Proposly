@@ -9,6 +9,7 @@ import {
   getUnreadCount,
   markAllAsRead,
   markAsRead,
+  dismissAllNotifications,
 } from "../services/notifications.service"
 
 const NOTIFICATIONS_KEY = "notifications"
@@ -40,6 +41,14 @@ export function useNotifications(userId: string) {
 
   const markOneMutation = useMutation({
     mutationFn: (notificationId: string) => markAsRead(notificationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY, userId] })
+      queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_KEY, userId] })
+    },
+  })
+
+  const dismissAllMutation = useMutation({
+    mutationFn: () => dismissAllNotifications(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY, userId] })
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_KEY, userId] })
@@ -87,5 +96,7 @@ export function useNotifications(userId: string) {
     handleMarkAllRead: () => markAllMutation.mutate(),
     handleMarkOneRead: (id: string) => markOneMutation.mutate(id),
     isMarkingAll: markAllMutation.isPending,
+    handleDismissAll: () => dismissAllMutation.mutate(),
+    isDismissingAll: dismissAllMutation.isPending,
   }
 }
