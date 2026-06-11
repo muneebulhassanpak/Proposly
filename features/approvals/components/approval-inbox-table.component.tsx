@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChevronRight, Inbox } from "lucide-react"
 
 import {
@@ -82,43 +82,47 @@ export function ApprovalInboxTable({
 
           {!isLoading &&
             approvals.map((a) => (
-              <TableRow key={a.id} className="group">
-                <TableCell>
-                  <Link
-                    href={ROUTES.MANAGER_APPROVAL_DETAIL(a.id)}
-                    className="font-medium text-ink hover:underline"
-                  >
-                    {a.quoteTitle}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-sm text-ink-soft">
-                  {a.clientCompanyName ?? a.clientName ?? "No client"}
-                </TableCell>
-                <TableCell className="text-sm text-ink-soft">
-                  {a.repName}
-                </TableCell>
-                <TableCell className="text-right font-mono text-sm text-amber tabular-nums">
-                  {a.discountPercent.toFixed(1)}%
-                </TableCell>
-                <TableCell className="text-right font-mono text-sm tabular-nums">
-                  {formatMoney(a.total, a.currency)}
-                </TableCell>
-                <TableCell className="text-right text-sm text-ink-mute">
-                  {formatRelativeTime(a.requestedAt)}
-                </TableCell>
-                <TableCell>
-                  <Link href={ROUTES.MANAGER_APPROVAL_DETAIL(a.id)}>
-                    <ChevronRight
-                      size={16}
-                      strokeWidth={1.5}
-                      className="text-ink-mute opacity-0 transition-opacity group-hover:opacity-100"
-                    />
-                  </Link>
-                </TableCell>
-              </TableRow>
+              <ClickableApprovalRow key={a.id} approval={a} />
             ))}
         </TableBody>
       </Table>
     </div>
+  )
+}
+
+function ClickableApprovalRow({ approval: a }: { approval: ApprovalListItem }) {
+  const router = useRouter()
+
+  return (
+    <TableRow
+      className="group cursor-pointer"
+      onClick={() => router.push(ROUTES.MANAGER_APPROVAL_DETAIL(a.id))}
+    >
+      <TableCell>
+        <span className="font-medium text-ink group-hover:underline">
+          {a.quoteTitle}
+        </span>
+      </TableCell>
+      <TableCell className="text-sm text-ink-soft">
+        {a.clientCompanyName ?? a.clientName ?? "No client"}
+      </TableCell>
+      <TableCell className="text-sm text-ink-soft">{a.repName}</TableCell>
+      <TableCell className="text-right font-mono text-sm text-amber tabular-nums">
+        {a.discountPercent.toFixed(1)}%
+      </TableCell>
+      <TableCell className="text-right font-mono text-sm tabular-nums">
+        {formatMoney(a.total, a.currency)}
+      </TableCell>
+      <TableCell className="text-right text-sm text-ink-mute">
+        {formatRelativeTime(a.requestedAt)}
+      </TableCell>
+      <TableCell>
+        <ChevronRight
+          size={16}
+          strokeWidth={1.5}
+          className="text-ink-mute opacity-0 transition-opacity group-hover:opacity-100"
+        />
+      </TableCell>
+    </TableRow>
   )
 }
